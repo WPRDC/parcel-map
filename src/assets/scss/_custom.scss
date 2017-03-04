@@ -27,33 +27,33 @@ body {
   .flex-item:nth-child(1) {
     order: 0;
     flex: 0 1 auto;
-    border: 2px solid blue;
+    //border: 2px solid blue;
   }
 
   .flex-item:nth-child(2) {
     order: 1;
     flex: 2 1 auto;
     align-items: stretch;
-    border: 2px solid red;
+    border: 1px solid $black;
   }
 
   .flex-item:nth-child(3) {
     order: 2;
     flex: 0 1 25vh;
     align-self: auto;
-    border: 2px solid green;
+    // border: 2px solid green;
     min-height: 200px;
   }
 
   #map {
-    border: 2px solid fuchsia;
+    border: 1px solid $black;
     display: inline-block;
     flex: 1 1 auto;
     align-items: stretch;
     padding: 0 0 0 0;
   }
   #data {
-    border: 2px solid teal;
+    border: 1px solid $black;
   }
 }
 
@@ -66,11 +66,47 @@ body {
   align-items: stretch;
 }
 
-
 #map path {
   stroke: $primary-color;
   fill: $black;
   stroke-opacity: 1;
   fill-opacity: 0.6;
   stroke-width: 2px;
+}
+
+#address {
+  p:first-of-type {
+    font-size: 24pt;
+  }
+  p {
+    font-family: $address-font;
+    margin-bottom: 0;
+    font-size: 14pt;
+  }
+}
+
+.data-list {
+  list-style: none;
+}
+
+.data-title {
+  vertical-align: top;
+  font-weight: 700;
+}
+
+.data-result {
+  font-style: italic;
+}
+
+.small-margin {
+  margin: 2px;
+}
+
+
+.material-icon.success {
+  color: $success-color;
+}
+
+.material-icon.alert{
+  color: $alert-color;
 }
