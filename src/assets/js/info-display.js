@@ -9,11 +9,11 @@ function displayParcelData(pin) {
     console.log(pin);
     $.get(parcelAPIUrl + pin, function (data) {
         const records = data.data;
-        console.log('1', data);
         // Build modules
         makeHeading(records);
         makeAssessment(records.assessments);
-        makeBasicInfo(records.assessments)
+        makeBasicInfo(records.assessments);
+        makeFrontPage(data);
     })
 }
 
@@ -25,7 +25,35 @@ function makeHeading(data) {
     $('#basic-info').html()
 }
 
+function makeFrontPage(data) {
+    const $svImg = $('#sv-image');
+    $svImg.attr('src', "");
+    let records = data.data.assessments;
+    const streetViewUrl = "https://maps.googleapis.com/maps/api/streetview";
+    let centroid = data.geo.centroid.coordinates;
+    const params = {
+        key: "AIzaSyCcLG-dRLxiRB22U9cSv1jaP6XxoOn5aSY",
+        location: records['PROPERTYHOUSENUM'] + " " + records['PROPERTYADDRESS'] + records['PROPERTYCITY'] + ", " + records['PROPERTYSTATE'] + " " + records['PROPERTYZIP'],
+        size: "600x300"
+    };
+
+    let imgUrl = streetViewUrl + '?' + $.param(params);
+    $.get(streetViewUrl + "/metadata?" + $.param(params))
+        .done(function (data) {
+            if (data.status == 'OK' && records['PROPERTYHOUSENUM'].charAt(0) != '0') {
+                $svImg.attr('src', imgUrl);
+            } else if (data.status == "NOT_FOUND") {
+                console.log('using lat/lng backup');
+                params.location = centroid[1] + ',' + centroid[0];
+                imgUrl = streetViewUrl + '?' + $.param(params);
+                $svImg.attr('src', imgUrl);
+            }
+        })
+
+}
+
 function makeAssessment(data) {
+    // Assessment values table
     $('#building-val').empty().append(currency(data['COUNTYBUILDING']));
     $('#land-val').empty().append(currency(data['COUNTYLAND']));
     $('#total-val').empty().append(currency(data['COUNTYTOTAL']));
@@ -38,22 +66,24 @@ function makeAssessment(data) {
     $('#land-val-fair ').empty().append(currency(data['FAIRMARKETLAND']));
     $('#total-val-fair').empty().append(currency(data['FAIRMARKETTOTAL']));
 
-    let matchings = {
+    // Reduction Flags
+    let flagMatchings = {
         'HOMESTEADFLAG': '#homestead',
         'CLEANGREEN': '#cleangreen',
         'FARMSTEADFLAG': '#farmstead',
         'ABATEMENT': '#abatement'
     };
 
-
-    for (let key in matchings){
-
+    for (let key in flagMatchings) {
         if (data[key]) {
-            $(matchings[key]).html('<i class="material-icons md-24 success">check</i>');
+            $(flagMatchings[key]).html('<i class="material-icons md-24 green">check</i>');
         } else {
-            $(matchings[key]).html('<i class="material-icons md-24 alert">close</i>');
+            $(flagMatchings[key]).html('<i class="material-icons md-24 red">close</i>');
         }
     }
+
+    // Comparison histogram
+    makeAssmtDist(data['PROPERTYZIP'], data['COUNTYTOTAL'], '#asmt-chart')
 
 
 }
@@ -70,7 +100,7 @@ function makeBasicInfo(data) {
     };
 
     $info.empty();
-    for (let key in fields){
+    for (let key in fields) {
         if (fields.hasOwnProperty(key)) {
             if (key == "LOTAREA") {
                 data[key] = commafy(data[key]) + "  ft<sup>2</sup>"
