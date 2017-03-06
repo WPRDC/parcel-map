@@ -1,3 +1,12 @@
+/**
+ *
+ */
+let lastVizPins = {assessment: "", sales: ""};
+
+let svgWidth = $('#info-container').width() - parseInt($('.tabs-panel').css('padding-left'), 10) * 2;
+console.log('svgWidth', svgWidth);
+
+
 function makeAssmtDist(zip, asmtVal, svgSelector) {
     $(svgSelector).empty();
     // console.log("THE ZIP", zip);
@@ -27,7 +36,7 @@ function makeAssmtDist(zip, asmtVal, svgSelector) {
 
             let svg = d3.select(svgSelector),
                 margin = {top: 10, right: 3, bottom: 30, left: 3},
-                width = parseInt(svg.style('width'), 10),
+                width = svgWidth - 5,
                 height = parseInt(svg.style('height'), 10) - margin.top - margin.bottom,
                 g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -83,23 +92,29 @@ function makeAssmtDist(zip, asmtVal, svgSelector) {
         .fail(function () {
             alert('it failed')
         });
-
+    lastVizPins.assessment = currentPin;
 }
 
 function makeSalesChart(data) {
+    $('#sales-chart').empty()
     console.log("salesChart", data);
+
+    if (data.length <= 1) {
+        return
+    }
 
     let svg = d3.select("#sales-chart"),
         margin = {top: 20, right: 5, bottom: 30, left: 50},
-        width = parseInt(svg.style('width'), 10) - margin.left - margin.right,
+        width = svgWidth - margin.left - margin.right - 5,
         height = parseInt(svg.style('height'), 10) - margin.top - margin.bottom,
         g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     let parseTime = d3.timeParse("%m-%d-%Y");
 
-    for(let i = 0; i < data.length; i++){
+    for (let i = 0; i < data.length; i++) {
         data[i].d = parseTime(data[i].d);
         data[i].p = +data[i].p;
+        console.log(data[i]);
     }
     console.log(data);
 
@@ -145,4 +160,6 @@ function makeSalesChart(data) {
         .datum(data)
         .attr("class", "line")
         .attr("d", line);
+
+    lastVizPins.sales = currentPin;
 }

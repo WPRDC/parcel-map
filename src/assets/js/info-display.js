@@ -5,30 +5,64 @@
 const parcelAPIUrl = "http://tools.wprdc.org/property-api/parcel/";
 
 
-function displayParcelData(pin) {
-    console.log(pin);
+// Tab Listeners
+$('#assessment-tab').on('click', function () {
+    if (lastVizPins.assessment != currentPin) {
+        $.get(parcelAPIUrl + currentPin, function (data) {
+            makeAssessment(data.data.assessments[0])
+        })
+    }
+});
+$('#sales-tab').on('click', function () {
+    if (lastVizPins.sales != currentPin) {
+        $.get(parcelAPIUrl + currentPin, function (data) {
+            makeSalesModule(data.data.assessments[0])
+        })
+    }
+});
+
+function displayParcelData(pin, pan) {
+    currentPin = pin;
+
+    let $loader = $('#address-container').find('.loader');
+    $loader.show();
     $.get(parcelAPIUrl + pin, function (data) {
+
+        if (pan) {
+            let latlng = data.geo.centroid.coordinates.reverse();
+            console.log(latlng);
+            map.setView(latlng, 18)
+        }
+
         const records = data.data;
         // Build modules
         makeHeading(records);
-        makeAssessment(records.assessments);
-        makeBasicInfo(records.assessments);
         makeFrontPage(data);
+        makeAssessment(records.assessments[0]);
+        makeBasicInfo(records.assessments[0]);
+        makeRegionsModule(records.centroids_and_geo_info[0]);
+        makeCodeViolationsModule(records.pli_violations);
+        makeSalesModule(records.assessments[0]);
+        $loader.hide();
     })
 }
 
 
 function makeHeading(data) {
-    console.log('2', data);
 
-    $('#address').html(buildAddress(data.assessments))
+    $('#address').html(buildAddress(data.assessments[0]));
     $('#basic-info').html()
 }
 
 function makeFrontPage(data) {
+
+    let $loader = $('#front-page').find('.loader');
+    $loader.show();
+
+
     const $svImg = $('#sv-image');
     $svImg.attr('src', "");
-    let records = data.data.assessments;
+    let records = data.data.assessments[0];
     const streetViewUrl = "https://maps.googleapis.com/maps/api/streetview";
     let centroid = data.geo.centroid.coordinates;
     const params = {
@@ -40,17 +74,46 @@ function makeFrontPage(data) {
     let imgUrl = streetViewUrl + '?' + $.param(params);
     $.get(streetViewUrl + "/metadata?" + $.param(params))
         .done(function (data) {
-            if (data.status == 'OK' && records['PROPERTYHOUSENUM'].charAt(0) != '0') {
+            if (data.status == 'OK') {
+                $loader.hide();
                 $svImg.attr('src', imgUrl);
             } else if (data.status == "NOT_FOUND") {
                 console.log('using lat/lng backup');
                 params.location = centroid[1] + ',' + centroid[0];
                 imgUrl = streetViewUrl + '?' + $.param(params);
+                $loader.hide();
                 $svImg.attr('src', imgUrl);
             }
-        })
+        });
 
+    let check = 0;
+    let $bldg = $("#building");
+    $bldg.empty();
+
+
+    let fields = {
+        "STYLEDESC": "Style",
+        "STORIES": "Stories",
+        "YEARBLT": "Year Built",
+        "EXTFINISH_DESC": "Exertior Finish",
+        "ROOFDESC": "Roof",
+        "BASEMENTDESC": "Basement",
+        "GRADEDESC": "Grade",
+        "CONDITIONDESC": "Condition",
+        "CDUDESC": "CDU"
+    };
+
+    for (let key in fields) {
+        if (records[key]) {
+            $bldg.append("<li><span class='data-title'>" + fields[key] + ": </span><span class='data-result'>" + records[key] + "</span></li>");
+            check++;
+        }
+    }
+    if (check === 0) {
+        $bldg.append("<li class='alert-minor'>Dwelling characteritics are only available for residential parcels.</li>");
+    }
 }
+
 
 function makeAssessment(data) {
     // Assessment values table
@@ -83,8 +146,9 @@ function makeAssessment(data) {
     }
 
     // Comparison histogram
-    makeAssmtDist(data['PROPERTYZIP'], data['COUNTYTOTAL'], '#asmt-chart')
-
+    if (isTabActive('#assessment-tab')) {
+        makeAssmtDist(data['PROPERTYZIP'], data['COUNTYTOTAL'], '#asmt-chart')
+    }
 
 }
 
@@ -112,7 +176,61 @@ function makeBasicInfo(data) {
     if (check === 0) {
         $info.append("<li class='alert-minor'>Looks like something went wrong!</li>");
     }
-};
+}
+
+function makeCodeViolationsModule(data) {
+    let $codeViolations = $('#code-violations'),
+        violations = {};
+
+    const fields = {
+        "CASE_NUMBER": "Case No",
+        "INSPECTION_RESULT": "Inspection result",
+        "VIOLATION": "Violation",
+        "LOCATION": "Location on Property"
+    };
+
+    $codeViolations.empty();
+
+
+    if (data.length === 0) {
+        $codeViolations.append("<p class='alert-minor'>No Violations found for this property.</p>");
+    }
+    else {
+        for (let i = 0; i < data.length; i++) {
+            record = data[i];
+            console.log(record);
+
+            if (!(record['CASE_NUMBER'] in violations)) {
+                violations[record['CASE_NUMBER']] = []
+            }
+
+            let obj = {};
+            for (let field in fields) {
+                obj[field] = record[field]
+            }
+            violations[record['CASE_NUMBER']].push(obj)
+        }
+
+
+        for (let caseNo in violations) {
+            if (violations.hasOwnProperty(caseNo)) {
+                console.log(violations);
+                $codeViolations.append("<h5> Case #: " + caseNo + "</h5>");
+                for (let k = 0; k < violations[caseNo].length; k++) {
+                    $newList = $("<ul class='data-list' id='" + caseNo + "-" + k + "'></ul>");
+                    $codeViolations.append($newList);
+                    for (let key in fields) {
+                        if (key != 'CASE_NUMBER') {
+                            $newList.append("<li><span class='data-title'>" + fields[key] + ": </span><span class='data-result'>" + violations[caseNo][k][key] + "</span></li>")
+
+                        }
+                    }
+                }
+
+            }
+        }
+    }
+}
 
 /**
  * Builds address from assessment data
@@ -124,3 +242,70 @@ function buildAddress(data) {
         + data['PROPERTYCITY'] + ", " + data['PROPERTYSTATE'] + " " + data['PROPERTYZIP'] + "</p>";
 }
 
+
+function makeRegionsModule(data) {
+    if (data['geo_name_nhood'] == "" || data['geo_name_nhood'] == " ") {
+        data['geo_name_nhood'] = "N/A"
+    }
+
+    const fields = {
+        "geo_name_cousub": "Municipality",
+        "geo_name_schooldist": "School District",
+        "geo_name_nhood": "Pittsburgh Neighborhood",
+        "geo_id_tract": "2010 Census Tract Number",
+        "geo_name_blockgp": "2010 Census Blockgroup Number",
+        "geo_name_HousePA": "State House District",
+        "geo_name_SenatePA": "State Senate District",
+        "geo_name_countycouncil": "Allegheny County Council District"
+    };
+
+    $("#zones").empty();
+    for (let key in fields) {
+        if (data[key]) {
+            if (key == "geo_name_blockgp") {
+                data[key] = data['geo_name_blockgp'].split(' ').slice(-1)[0];
+            }
+            if (key == "MAPBLOCKLO") {
+                $("#mapblocklo").empty().append(records[key])
+            } else {
+                $("#zones").append("<p class='small-margin'><span class='data-title'>" + fields[key] + ": </span><span class='data-result'>" + data[key] + "</span></p>");
+            }
+        }
+    }
+}
+
+
+function makeSalesModule(data) {
+    $salesTable = $('#sales-table');
+    $salesTable.empty();
+    let salesData = [];
+
+    if (data["SALEDATE"]) {
+        salesData.push({'d': data["SALEDATE"], 'p': data["SALEPRICE"]});
+    }
+    if (data["PREVSALEDATE"]) {
+        salesData.push({'d': data["PREVSALEDATE"], 'p': data["PREVSALEPRICE"]});
+    }
+    if (data["PREVSALEDATE2"]) {
+        salesData.push({'d': data["PREVSALEDATE2"], 'p': data["PREVSALEPRICE2"]});
+    }
+
+
+    $salesTable.empty();
+    // If there are records, create the table
+    if (salesData.length) {
+        $salesTable.append('<table class="responsive"></table>');
+        $salesTable.find('table').append('<thead><tr><th>Sale Date</th><th>Price</th></tr></thead><tbody></tbody>');
+        for (let i = 0; i < salesData.length; i++) {
+            var record = salesData[i];
+            // var saledate = moment(record['SALEDATE']);
+            $salesTable.find('tbody').append('<tr>' + '<td>' + record['d'] + '</td>' + '<td> $' + commafy(record['p']) + '</td>' + '</tr>');
+        }
+    } else {
+        $('#sales-table').append("<p class='alert-minor'>There are no recent sales records for this property.</p>");
+    }
+
+    if (isTabActive('#sales-tab')) {
+        makeSalesChart(salesData);
+    }
+}

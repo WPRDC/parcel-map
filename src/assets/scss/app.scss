@@ -5,6 +5,8 @@
 @import 'motion-ui';
 @import 'custom';
 
+@import 'components/loader';
+
 @include foundation-global-styles;
 @include foundation-grid;
 // @include foundation-flex-grid;

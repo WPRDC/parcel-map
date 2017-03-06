@@ -12,13 +12,7 @@ const map = new L.Map('map', {
 const selectedLayer = L.geoJson().addTo(map); //add empty geojson layer for selections
 
 // Set up basemap
-const baseMap =  L.tileLayer('http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-    subdomains: 'abcd',
-    maxZoom: 19
-});
-
-const Stamen_TonerLabels = L.tileLayer('http://stamen-tiles-{s}.a.ssl.fastly.net/toner-labels/{z}/{x}/{y}.{ext}', {
+const baseMap = L.tileLayer('http://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}.{ext}', {
     attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
     subdomains: 'abcd',
     minZoom: 0,
@@ -26,16 +20,16 @@ const Stamen_TonerLabels = L.tileLayer('http://stamen-tiles-{s}.a.ssl.fastly.net
     ext: 'png'
 });
 
+
 baseMap.addTo(map);
 
-Stamen_TonerLabels.addTo(map);
+const cartoSQL = new cartodb.SQL({user: 'wprdc'});
 
 // Add cartodb named map to map
 cartodb.createLayer(map, mapUrl)
     .addTo(map)
     .on('done', function (layer) {
         let parcels = layer.getSubLayer(0);
-        console.log(parcels.get('cartocss'));
 
         let parcelCSS = "#allegheny_county_parcel_boundaries{" +
             "polygon-fill: #FFFFFF;" +
@@ -46,18 +40,14 @@ cartodb.createLayer(map, mapUrl)
             "[zoom >= 15] {line-opacity: .8;}" +
             "}";
 
-            parcels.setCartoCSS(parcelCSS)
-
-        console.log(parcels);
+        parcels.setCartoCSS(parcelCSS)
         parcels.on('featureClick', processParcel);
     });
 
 // When a parcel is clicked, highlight it
-function processParcel(e, latlng, pos, data, layer) {
-    console.log(data);
+function processParcel(e, latlng, pos, data, layer, pan) {
     selectedLayer.clearLayers();
-    const sql = new cartodb.SQL({user: 'wprdc'});
-    sql.execute("SELECT the_geom FROM allegheny_county_parcel_boundaries WHERE pin = '{{id}}'",
+    cartoSQL.execute("SELECT the_geom FROM allegheny_county_parcel_boundaries WHERE pin = '{{id}}'",
         {
             id: data.pin
         },
@@ -65,9 +55,31 @@ function processParcel(e, latlng, pos, data, layer) {
             format: 'geoJSON'
         }
     ).done(function (data) {
+        console.log(data);
+
         selectedLayer.addData(data);
 
     });
-    displayParcelData(data.pin)
+    if (pan){
+
+    }
+    displayParcelData(data.pin, pan)
 }
+
+
+function colorByAssessment() {
+    let coloredLayer = L.geoJson().addTo(map);
+    let ids = ['0028F00192000000', '0028F00190000000', '0028K00150000000'];
+    let idstr = "('" + ids.join("','") + "')";
+    console.log(idstr);
+    cartoSQL.execute("SELECT the_geom FROM allegheny_county_parcel_boundaries WHERE pin in " + idstr,{},
+        {
+            format: 'geoJSON'
+        }
+    ).done(function (data) {
+        console.log(data);
+        coloredLayer.addData(data);
+    });
+}
+
 

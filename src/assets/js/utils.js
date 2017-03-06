@@ -12,3 +12,14 @@ function commafy(number) {
     }
     return number;
 }
+
+
+function isTabActive(tabId) {
+    let classes = $(tabId).attr('class').split(' ');
+    for (let i = 0; i < classes.length; i++){
+        if (classes[i] == 'is-active') {
+            return true
+        }
+    }
+    return false
+}
