@@ -2,21 +2,21 @@
  * Created by SDS25 on 3/3/2017.
  */
 
-const parcelAPIUrl = "http://tools.wprdc.org/property-api/parcel/";
+const parcelAPIUrl = "http://tools.wprdc.org/property-api/v1/parcels/";
 
 
 // Tab Listeners
 $('#assessment-tab').on('click', function () {
     if (lastVizPins.assessment != currentPin) {
         $.get(parcelAPIUrl + currentPin, function (data) {
-            makeAssessment(data.data.assessments[0])
+            makeAssessment(data.results[0].data.assessments[0])
         })
     }
 });
 $('#sales-tab').on('click', function () {
     if (lastVizPins.sales != currentPin) {
         $.get(parcelAPIUrl + currentPin, function (data) {
-            makeSalesModule(data.data.assessments[0])
+            makeSalesModule(data.results[0].data.assessments[0])
         })
     }
 });
@@ -27,18 +27,19 @@ function displayParcelData(pin, pan) {
     let $loader = $('#address-container').find('.loader');
     $loader.show();
     $.get(parcelAPIUrl + pin, function (data) {
-
+        console.log("DATA: ", data);
         if (pan) {
-            let latlng = data.geo.centroid.coordinates.reverse();
-            console.log(latlng);
+            let latlng = data.results[0].geos.centroid.coordinates.reverse();
             map.setView(latlng, 18)
         }
 
-        const records = data.data;
+        const records = data.results[0].data;
         // Build modules
         makeHeading(records);
-        makeFrontPage(data);
+        makeFrontPage(data.results[0]);
+
         makeAssessment(records.assessments[0]);
+
         makeBasicInfo(records.assessments[0]);
         makeRegionsModule(records.centroids_and_geo_info[0]);
         makeCodeViolationsModule(records.pli_violations);
@@ -49,7 +50,6 @@ function displayParcelData(pin, pan) {
 
 
 function makeHeading(data) {
-
     $('#address').html(buildAddress(data.assessments[0]));
     $('#basic-info').html()
 }
@@ -58,13 +58,13 @@ function makeFrontPage(data) {
 
     let $loader = $('#front-page').find('.loader');
     $loader.show();
-
+    console.log("DATA", data);
 
     const $svImg = $('#sv-image');
     $svImg.attr('src', "");
     let records = data.data.assessments[0];
     const streetViewUrl = "https://maps.googleapis.com/maps/api/streetview";
-    let centroid = data.geo.centroid.coordinates;
+    let centroid = data.geos.centroid.coordinates;
     const params = {
         key: "AIzaSyCcLG-dRLxiRB22U9cSv1jaP6XxoOn5aSY",
         location: records['PROPERTYHOUSENUM'] + " " + records['PROPERTYADDRESS'] + records['PROPERTYCITY'] + ", " + records['PROPERTYSTATE'] + " " + records['PROPERTYZIP'],
@@ -72,6 +72,7 @@ function makeFrontPage(data) {
     };
 
     let imgUrl = streetViewUrl + '?' + $.param(params);
+
     $.get(streetViewUrl + "/metadata?" + $.param(params))
         .done(function (data) {
             if (data.status == 'OK') {
@@ -116,6 +117,7 @@ function makeFrontPage(data) {
 
 
 function makeAssessment(data) {
+    console.log("ASSESMENT", data);
     // Assessment values table
     $('#building-val').empty().append(currency(data['COUNTYBUILDING']));
     $('#land-val').empty().append(currency(data['COUNTYLAND']));
@@ -156,7 +158,6 @@ function makeBasicInfo(data) {
     let check = 0;
     const $info = $("#basic-info");
     const fields = {
-        "PARID": "PIN",
         "OWNERDESC": "Owner Type",
         "CLASSDESC": "Use Class",
         "USEDESC": "Land Use",
@@ -164,6 +165,8 @@ function makeBasicInfo(data) {
     };
 
     $info.empty();
+    $info.append("<li><span class='data-title'>" + "Parcel ID" + ": </span><span class='data-result'>" + currentPin+ "</span></li>");
+
     for (let key in fields) {
         if (fields.hasOwnProperty(key)) {
             if (key == "LOTAREA") {
@@ -179,6 +182,7 @@ function makeBasicInfo(data) {
 }
 
 function makeCodeViolationsModule(data) {
+    console.log("CODE VIOLATIONS", data);
     let $codeViolations = $('#code-violations'),
         violations = {};
 
@@ -197,9 +201,7 @@ function makeCodeViolationsModule(data) {
     }
     else {
         for (let i = 0; i < data.length; i++) {
-            record = data[i];
-            console.log(record);
-
+            let record = data[i];
             if (!(record['CASE_NUMBER'] in violations)) {
                 violations[record['CASE_NUMBER']] = []
             }
@@ -214,10 +216,9 @@ function makeCodeViolationsModule(data) {
 
         for (let caseNo in violations) {
             if (violations.hasOwnProperty(caseNo)) {
-                console.log(violations);
                 $codeViolations.append("<h5> Case #: " + caseNo + "</h5>");
                 for (let k = 0; k < violations[caseNo].length; k++) {
-                    $newList = $("<ul class='data-list' id='" + caseNo + "-" + k + "'></ul>");
+                    let $newList = $("<ul class='data-list' id='" + caseNo + "-" + k + "'></ul>");
                     $codeViolations.append($newList);
                     for (let key in fields) {
                         if (key != 'CASE_NUMBER') {
@@ -276,7 +277,7 @@ function makeRegionsModule(data) {
 
 
 function makeSalesModule(data) {
-    $salesTable = $('#sales-table');
+    let $salesTable = $('#sales-table');
     $salesTable.empty();
     let salesData = [];
 

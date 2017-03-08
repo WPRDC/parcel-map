@@ -1,0 +1,62 @@
+<div class="tab-holder">
+    <ul class="tabs" data-tabs id="search-tabs">
+        <li class="tabs-title is-active"><a href="#panel1" aria-selected="true">Address</a></li>
+        <li class="tabs-title"><a href="#panel2">PIN</a></li>
+    </ul>
+</div>
+<div class="tabs-content" data-tabs-content="search-tabs">
+    <!-- Address tab -->
+    <div class="tabs-panel is-active" id="panel1">
+        <h6 class="text-center">Search by Address</h6>
+        <form id="address-search">
+            <div class="row collapse">
+
+                <div class="small-3 columns">
+                    <label>Number
+                        <input autocomplete="off" id="num" type="text" placeholder="3343">
+                    </label>
+                </div>
+                <div class="small-9 columns">
+                    <label>Street
+                    </label>
+                    <input autocomplete="off" id="street" type="text" placeholder="Forbes Ave">
+                    <ul class="prediction" id="street-prediction"></ul>
+                </div>
+            </div>
+            <div class="row collapse">
+                <div class="small-9 columns">
+                    <label>City</label>
+                    <input autocomplete="off" id="city" type="text" placeholder="Pittsburgh">
+                    <ul class="prediction" id="city-prediction"></ul>
+                </div>
+                <div class="small-3 columns">
+                    <label>Zip
+                        <input id="zip" type="text" placeholder="15213">
+                    </label>
+                </div>
+            </div>
+            <br>
+            <div class="row collapse">
+                <div class="small-3 small-centered columns">
+                    <input autocomplete="off" id="search-button" type="button" class="expanded button"
+                           value="Search">
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- PIN tab -->
+    <div class="tabs-panel" id="panel2">
+        <h6 class="text-center">Search by Parcel ID</h6>
+        <form id="pin-search">
+            <div class="input-group">
+                <input id="pin-search-box" class="input-group-field search-box" type="text"
+                       placeholder="0028F00193000000">
+                <div class="input-group-button search-button">
+                    <input id="pin-search-button" type="button" class="button" value="Search">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+

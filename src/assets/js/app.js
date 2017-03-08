@@ -15,7 +15,6 @@ $(window).onload = processParcel(null, null, null, defaultParcel, null, true);
 
 $('#top-search-button').on('click', function () {
     let searchString = $('#top-search').val();
-    console.log(searchString);
     mainSearch(searchString);
 });
 
@@ -27,3 +26,5 @@ function mainSearch(searchString) {
         processParcel(null, null, null, {pin: searchString}, null, true);
     }
 }
+
+

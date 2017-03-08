@@ -193,3 +193,15 @@ path.line {
   fill: none;
   stroke-width: 2px;
 }
+
+.dropdown-pane {
+  .tabs-panel {
+    padding: 0;
+  }
+}
+
+.tab-holder {
+  width: 100%;
+  display: inline-block;
+  text-align: center !important;
+}

@@ -10,9 +10,13 @@
         </div>
         <div class="top-bar-right">
             <ul class="menu">
-                <li><input id="top-search" type="search" placeholder="Search Parcel ID"></li>
-                <li><button id="top-search-button" type="button" class="button">Search</button></li>
+                <!--<li><input id="top-search" type="search" placeholder="Search Parcel ID"></li>-->
+                <!--<li><button id="top-search-button" type="button" class="button">Search</button></li>-->
+                <li><button id="search-menu-button" type="button" class="button no-close" data-toggle="search-dropdown">Search...</button></li>
             </ul>
+        </div>
+        <div class="dropdown-pane bottom right no-close" id="search-dropdown" data-dropdown data-auto-focus="true">
+            {{>addr-search}}
         </div>
     </div>
 </div>
