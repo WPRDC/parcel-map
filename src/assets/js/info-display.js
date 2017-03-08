@@ -30,7 +30,6 @@ function displayParcelData(pin, pan) {
 
         if (pan) {
             let latlng = data.geo.centroid.coordinates.reverse();
-            console.log(latlng);
             map.setView(latlng, 18)
         }
 
@@ -72,6 +71,7 @@ function makeFrontPage(data) {
     };
 
     let imgUrl = streetViewUrl + '?' + $.param(params);
+
     $.get(streetViewUrl + "/metadata?" + $.param(params))
         .done(function (data) {
             if (data.status == 'OK') {
@@ -198,8 +198,6 @@ function makeCodeViolationsModule(data) {
     else {
         for (let i = 0; i < data.length; i++) {
             record = data[i];
-            console.log(record);
-
             if (!(record['CASE_NUMBER'] in violations)) {
                 violations[record['CASE_NUMBER']] = []
             }
@@ -214,7 +212,6 @@ function makeCodeViolationsModule(data) {
 
         for (let caseNo in violations) {
             if (violations.hasOwnProperty(caseNo)) {
-                console.log(violations);
                 $codeViolations.append("<h5> Case #: " + caseNo + "</h5>");
                 for (let k = 0; k < violations[caseNo].length; k++) {
                     $newList = $("<ul class='data-list' id='" + caseNo + "-" + k + "'></ul>");
@@ -276,7 +273,7 @@ function makeRegionsModule(data) {
 
 
 function makeSalesModule(data) {
-    $salesTable = $('#sales-table');
+    let $salesTable = $('#sales-table');
     $salesTable.empty();
     let salesData = [];
 
