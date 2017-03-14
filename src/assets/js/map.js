@@ -1,170 +1,149 @@
 /**
  * Created by SDS25 on 3/3/2017.
  */
-const mapUrls = {
-    parcel: 'https://wprdc.carto.com/api/v2/viz/75f76f2a-5e3a-11e6-bd76-0e3ff518bd15/viz.json',
-    neighborhoods: 'https://wprdc.carto.com/api/v2/viz/4c688fe6-f773-11e5-9fd3-0e3ff518bd15/viz.json'
-};
 
-const map = new L.Map('map', {
-    center: [40.45, -79.9959],
-    zoom: 13
-});
-
+/*
+ * ============================================================================
+ * | CLASSES AND FUNCTIONS |
+ * ============================================================================
+ */
 
 class Layer {
-    constructor(name, title, type, cartodbID, options) {
+    /**
+     * Map Layer
+     *
+     * @param name
+     * @param title
+     * @param type
+     * @param cartodbID
+     * @param map
+     * @param options
+     */
+    constructor(map, name, title, type, cartodbID, options) {
         this.name = name;
         this.title = title;
         this.type = type;
         this.cartodbID = cartodbID;
+        this.map = map;
         this.options = options;
-        this._layer = {};
+        if(options){
+            this.defaultOptions = JSON.parse(JSON.stringify(options));  // hack way to make a deep copy
+        }
+        this.z = null;
+        this.layer = {}
+    }
 
+    addTo(map){
+        let self = this;
         let mapUrl = `https://wprdc.carto.com/api/v2/viz/${this.cartodbID}/viz.json`;
+
         cartodb.createLayer(map, mapUrl)
+            .addTo(map)
             .on('done', function (layer) {
-                if (typeof options != 'undefined') {
-                    modifyCartoLayer(layer, options);
+                self.layer = layer;
+                if (typeof self.options != 'undefined') {
+                    console.log('modifying');
+                    self.modify(self.options);
                 }
-                customLayer._layer = layer;
             });
     }
 
-    /**
-     *
-     * @param map
-     * @param customLayer
-     * @param cartoMapId
-     * @param options
-     */
-    setLayer(map, customLayer, cartoMapId, options) {
-
+    reset() {
+        modify(this.defaultOptions)
     }
 
-
-}
-
-const parcelLayer = new Layer("base_parcel", "Parcels", "MultiPolygon", "75f76f2a-5e3a-11e6-bd76-0e3ff518bd15",
-    {
-        locked: true,
-        main_sublayer: 0,
-        css: "#allegheny_county_parcel_boundaries{" +
-        "polygon-fill: #FFFFFF;" +
-        "polygon-opacity: 0.2;" +
-        "line-color: #4d4d4d;" +
-        "line-width: 0.5;" +
-        "line-opacity: 0;" +
-        "[zoom >= 15] {line-opacity: .8;}}"
-    });
-
-// Generate Base Map
-const maps = {
-    parcel: {
-        id: '75f76f2a-5e3a-11e6-bd76-0e3ff518bd15',
-        options: {}
-    },
-    neighborhoods: {
-        id: '4c688fe6-f773-11e5-9fd3-0e3ff518bd15',
-        options: {
-            main_sublayer: 0,
-            sql: 'SELECT *, (objectid % 5) as color_code FROM pittsburgh_neighborhoods',
-            css: "#neighborhood{" +
-            "polygon-fill: ramp([color_code], (#5BC0EB, #FDE74C, #9BC53D, #E55934, #FA7921), quantiles);" +
-            "polygon-opacity: 0.3;" +
-            "line-color: #5BC0EB;" +
-            "line-width: 2;" +
-            "line-opacity: 1;" +
-            "}",
+    modify(options) {
+        this.options = options;
+        let layer = this.layer;
+        let shape;
+        if (typeof(options) != 'undefined') {
+            if (options.hasOwnProperty('main_sublayer')) {
+                shape = layer.getSubLayer(options.main_sublayer);
+            } else {
+                shape = layer.getSubLayer(0);
+            }
+            if (options.hasOwnProperty('sql')) {
+                shape.setSQL(options.sql);
+            }
+            if (options.hasOwnProperty('css')) {
+                shape.setCartoCSS(options.css);
+            }
+            if (options.hasOwnProperty('featureClick')) {
+                layer.on('featureClick', options.featureClick);
+            }
+            if (options.hasOwnProperty('featureOver')) {
+                layer.on('featureOver', options.featureOver);
+            }
         }
     }
+
+    setZIndex(z){
+        this.z = z;
+        this.layer.setZIndex(z);
+    }
+
+    hide(){
+
+    }
+}
+
+class LayerList {
+    constructor(map) {
+        this.map = map;
+        this.layers = []
+    }
+
+    getLayer(layerName) {
+        for (let layer of this.layers) {
+            if (layer.name == layerName) {
+                return layer
+            }
+        }
+        return undefined;
+    }
+
+    contains(layerName) {
+        for (let layer of this.layers) {
+            if (layer.name == layerName) {
+                return true;
+            }
+        }
+        return false
+    }
+
+    add(layer) {
+        if (!this.contains(layer.name)) {
+            this.layers.push(layer);
+            layer.addTo(map);
+        }
+    }
+
+    remove(layer) {
+        if (typeof(layer) === 'string'){
+            let l = this.getLayer(layerName);
+        } else{
+            l = layer
+        }
+
+        if (typeof(l) != 'undefined') {
+            this.map.removeLayer(l.layer);
+            let i = this.layers.indexOf(l);
+            this.layers.splice(i, 1);
+            return true;
+        }
+        return false
+    }
+}
+
+function mysize(obj) {
+    var size = 0, key;
+    for (key in obj) {
+        if (obj.hasOwnProperty(key)) size++;
+    }
+    return size;
 };
 
 
-let layers = [parcelLayer];
-console.log(layers);
-
-
-//Define extra layer on which to apply selection highlights
-const selectedLayer = L.geoJson().addTo(map); //add empty geojson layer for selections
-
-// Set up basemap
-const baseMap = L.tileLayer('http://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}.{ext}', {
-    attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-    subdomains: 'abcd',
-    minZoom: 0,
-    maxZoom: 20,
-    ext: 'png'
-});
-
-
-baseMap.addTo(map);
-
-const cartoSQL = new cartodb.SQL({user: 'wprdc'});
-
-// Add parcel layer
-cartodb.createLayer(map, mapUrls.parcel)
-    .addTo(map)
-    .on('done', function (layer) {
-        let parcels = layer.getSubLayer(0);
-
-        let parcelCSS = "#allegheny_county_parcel_boundaries{" +
-            "polygon-fill: #FFFFFF;" +
-            "polygon-opacity: 0.2;" +
-            "line-color: #4d4d4d;" +
-            "line-width: 0.5;" +
-            "line-opacity: 0;" +
-            "[zoom >= 15] {line-opacity: .8;}" +
-            "}";
-
-        parcels.setCartoCSS(parcelCSS)
-        parcels.on('featureClick', processParcel);
-    });
-
-
-/**
- * Create Carto Map as layer to `map`
- *
- * @param {Map}     map - a Leaflet Map object.
- * @param {Object}  _layer - object reference to point to created layer
- * @param {String}  cartoMapId - string representation of UUID of Carto map to add as layer
- * @param {Object}  options - options for data and styling layer
- */
-function addCustomLayer(map, customLayer, cartoMapId, options) {
-    let mapUrl = `https://wprdc.carto.com/api/v2/viz/${cartoMapId}/viz.json`;
-    cartodb.createLayer(map, mapUrl)
-        .on('done', function (layer) {
-            if (typeof options != 'undefined') {
-                modifyCartoLayer(layer, options);
-            }
-            customLayer._layer = layer;
-        });
-}
-
-function modifyCustomLayer(layerID, options) {
-    let layer = layers[layerID];
-    modifyCartoLayer(layer, options);
-}
-
-
-function modifyCartoLayer(layer, options) {
-    let shape;
-    if (typeof(options) != 'undefined') {
-        if (options.hasOwnProperty('main_sublayer')) {
-            shape = layer.getSubLayer(options.main_sublayer);
-        } else {
-            shape = layer.getSubLayer(0);
-        }
-        if (options.hasOwnProperty('sql')) {
-            shape.setSQL(options.sql);
-        }
-        if (options.hasOwnProperty('css')) {
-            shape.setCartoCSS(options.css);
-        }
-    }
-}
-
-//let myLayer = addCustomLayer(map, maps.neighborhoods.id, maps.neighborhoods.options);
 
 // When a parcel is clicked, highlight it
 function processParcel(e, latlng, pos, data, layer, pan) {
@@ -185,3 +164,70 @@ function processParcel(e, latlng, pos, data, layer, pan) {
     }
     displayParcelData(data.pin, pan)
 }
+
+/*
+ * ============================================================================
+ * | CONSTANTS AND SETTINGS |
+ * ============================================================================
+ */
+
+const cartoMaps = {
+    parcel: "75f76f2a-5e3a-11e6-bd76-0e3ff518bd15",
+    neighborhoods: "5c486850-1c99-11e6-ac7e-0ecd1babdde5",
+    municipalities: "af19fee2-234f-11e6-b598-0e3ff518bd15"
+};
+// Carto SQL engine
+const cartoSQL = new cartodb.SQL({user: 'wprdc'});
+
+// Set up basemap
+const baseMap = L.tileLayer('http://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}.{ext}', {
+    attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    subdomains: 'abcd',
+    minZoom: 0,
+    maxZoom: 20,
+    ext: 'png'
+});
+
+/*
+ * ============================================================================
+ * | MAP INITIALIZATION |
+ * ============================================================================
+ */
+
+// Instantiate main leaflet Map
+const map = new L.Map('map', {
+    center: [40.45, -79.9959],
+    zoom: 13
+});
+
+
+baseMap.addTo(map);
+
+
+const layers = new LayerList(map);
+
+// Main parcel layer for selection and so on
+const parcelLayer = new Layer(map, "base_parcel", "Parcels", "MultiPolygon", cartoMaps.parcel,
+    {
+        locked: true,
+        main_sublayer: 0,
+        css: "#allegheny_county_parcel_boundaries{" +
+        "polygon-fill: #FFFFFF;" +
+        "polygon-opacity: 0.2;" +
+        "line-color: #4d4d4d;" +
+        "line-width: 0.5;" +
+        "line-opacity: 0;" +
+        "[zoom >= 15] {line-opacity: .8;}}",
+        featureClick: processParcel
+    });
+
+layers.add(parcelLayer);
+
+//Define extra layer on which to apply selection highlights
+const selectedLayer = L.geoJson().addTo(map);
+
+
+let hoodLayer = new Layer(map, "neighborhood", "Neighborhoods", "MultiPolygon", cartoMaps.neighborhoods);
+
+
+
