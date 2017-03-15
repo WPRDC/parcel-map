@@ -26,14 +26,14 @@ class Layer {
         this.cartodbID = cartodbID;
         this.map = map;
         this.options = options;
-        if(options){
+        if (options) {
             this.defaultOptions = JSON.parse(JSON.stringify(options));  // hack way to make a deep copy
         }
         this.z = null;
         this.layer = {}
     }
 
-    addTo(map){
+    addTo(map) {
         let self = this;
         let mapUrl = `https://wprdc.carto.com/api/v2/viz/${this.cartodbID}/viz.json`;
 
@@ -77,12 +77,12 @@ class Layer {
         }
     }
 
-    setZIndex(z){
+    setZIndex(z) {
         this.z = z;
         this.layer.setZIndex(z);
     }
 
-    hide(){
+    hide() {
 
     }
 }
@@ -111,7 +111,12 @@ class LayerList {
         return false
     }
 
+    /**
+     * Add layer to list and Map.
+     * @param layer
+     */
     add(layer) {
+
         if (!this.contains(layer.name)) {
             this.layers.push(layer);
             layer.addTo(map);
@@ -119,9 +124,9 @@ class LayerList {
     }
 
     remove(layer) {
-        if (typeof(layer) === 'string'){
+        if (typeof(layer) === 'string') {
             let l = this.getLayer(layerName);
-        } else{
+        } else {
             l = layer
         }
 
@@ -134,15 +139,6 @@ class LayerList {
         return false
     }
 }
-
-function mysize(obj) {
-    var size = 0, key;
-    for (key in obj) {
-        if (obj.hasOwnProperty(key)) size++;
-    }
-    return size;
-};
-
 
 
 // When a parcel is clicked, highlight it
@@ -172,9 +168,35 @@ function processParcel(e, latlng, pos, data, layer, pan) {
  */
 
 const cartoMaps = {
-    parcel: "75f76f2a-5e3a-11e6-bd76-0e3ff518bd15",
-    neighborhoods: "5c486850-1c99-11e6-ac7e-0ecd1babdde5",
-    municipalities: "af19fee2-234f-11e6-b598-0e3ff518bd15"
+    parcel: {
+        "id": "75f76f2a-5e3a-11e6-bd76-0e3ff518bd15",
+        "type": "Multipolygon",
+        "defaultTitle": "Parcels",
+        "defaultOptions": {
+            locked: true,
+            main_sublayer: 0,
+            css: "#allegheny_county_parcel_boundaries{" +
+            "polygon-fill: #FFFFFF;" +
+            "polygon-opacity: 0.2;" +
+            "line-color: #4d4d4d;" +
+            "line-width: 0.5;" +
+            "line-opacity: 0;" +
+            "[zoom >= 15] {line-opacity: .8;}}",
+            featureClick: processParcel
+        }
+    },
+    neighborhoods: {
+        "id": "5c486850-1c99-11e6-ac7e-0ecd1babdde5",
+        "type": "Multipolygon",
+        "defaultTitle": "Pittsburgh Neighborhoods",
+        "defaultOptions": {}
+    },
+    municipalities: {
+        "id": "af19fee2-234f-11e6-b598-0e3ff518bd15",
+        "type": "Multipolygon",
+        "defaultTitle": "Allegheny County Municipalities",
+        "defaultOptions": {}
+    }
 };
 // Carto SQL engine
 const cartoSQL = new cartodb.SQL({user: 'wprdc'});
@@ -203,23 +225,12 @@ const map = new L.Map('map', {
 
 baseMap.addTo(map);
 
-
+// Instantiate LayerList
 const layers = new LayerList(map);
 
 // Main parcel layer for selection and so on
 const parcelLayer = new Layer(map, "base_parcel", "Parcels", "MultiPolygon", cartoMaps.parcel,
-    {
-        locked: true,
-        main_sublayer: 0,
-        css: "#allegheny_county_parcel_boundaries{" +
-        "polygon-fill: #FFFFFF;" +
-        "polygon-opacity: 0.2;" +
-        "line-color: #4d4d4d;" +
-        "line-width: 0.5;" +
-        "line-opacity: 0;" +
-        "[zoom >= 15] {line-opacity: .8;}}",
-        featureClick: processParcel
-    });
+);
 
 layers.add(parcelLayer);
 
@@ -227,7 +238,12 @@ layers.add(parcelLayer);
 const selectedLayer = L.geoJson().addTo(map);
 
 
-let hoodLayer = new Layer(map, "neighborhood", "Neighborhoods", "MultiPolygon", cartoMaps.neighborhoods);
+$('#geo-submit').on('click', function () {
+    let layerType = $('#geo-select').val();
+    let mapID = cartoMaps[layerType]
 
+    let tempLayer = new Layer(map, layerType, layerType, "Multipolygon", mapID)
+    layers.add(tempLayer);
+});
 
 
