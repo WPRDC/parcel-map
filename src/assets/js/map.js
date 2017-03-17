@@ -37,7 +37,7 @@ class Layer {
         let self = this;
         let mapUrl = `https://wprdc.carto.com/api/v2/viz/${this.cartodbID}/viz.json`;
 
-        cartodb.createLayer(map, mapUrl)
+        cartodb.createLayer(map, mapUrl )
             .addTo(map)
             .on('done', function (layer) {
                 self.layer = layer;
@@ -175,6 +175,7 @@ const cartoMaps = {
         "defaultOptions": {
             locked: true,
             main_sublayer: 0,
+            legends: false,
             css: "#allegheny_county_parcel_boundaries{" +
             "polygon-fill: #FFFFFF;" +
             "polygon-opacity: 0.2;" +
