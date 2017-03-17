@@ -229,8 +229,8 @@ baseMap.addTo(map);
 const layers = new LayerList(map);
 
 // Main parcel layer for selection and so on
-const parcelLayer = new Layer(map, "base_parcel", "Parcels", "MultiPolygon", cartoMaps.parcel,
-);
+const parcelLayer = new Layer(map, "base_parcel", "Parcels", "MultiPolygon", cartoMaps.parcel.id, cartoMaps.parcel.defaultOptions);
+
 
 layers.add(parcelLayer);
 

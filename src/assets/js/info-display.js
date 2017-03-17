@@ -2,21 +2,21 @@
  * Created by SDS25 on 3/3/2017.
  */
 
-const parcelAPIUrl = "http://tools.wprdc.org/property-api/parcel/";
+const parcelAPIUrl = "http://tools.wprdc.org/property-api/beta/parcels/";
 
 
 // Tab Listeners
 $('#assessment-tab').on('click', function () {
     if (lastVizPins.assessment != currentPin) {
         $.get(parcelAPIUrl + currentPin, function (data) {
-            makeAssessment(data.data.assessments[0])
+            makeAssessment(data.results[0].data.assessments)
         })
     }
 });
 $('#sales-tab').on('click', function () {
     if (lastVizPins.sales != currentPin) {
         $.get(parcelAPIUrl + currentPin, function (data) {
-            makeSalesModule(data.data.assessments[0])
+            makeSalesModule(data.results[0].data.assessments)
         })
     }
 });
@@ -29,27 +29,29 @@ function displayParcelData(pin, pan) {
     $.get(parcelAPIUrl + pin, function (data) {
 
         if (pan) {
-            let latlng = data.geo.centroid.coordinates.reverse();
+            let latlng = data.results[0].geos.centroid.coordinates.reverse();
             map.setView(latlng, 18)
         }
 
-        const records = data.data;
+        const records = data.results[0].data;
         // Build modules
         makeHeading(records);
-        makeFrontPage(data);
-        makeAssessment(records.assessments[0]);
-        makeBasicInfo(records.assessments[0]);
-        makeRegionsModule(records.centroids_and_geo_info[0]);
+        makeFrontPage(data.results[0]);
+
+        makeAssessment(records.assessments);
+
+        makeBasicInfo(records.assessments);
+        makeRegionsModule(records.centroids_and_geo_info);
         makeCodeViolationsModule(records.pli_violations);
-        makeSalesModule(records.assessments[0]);
+        makeSalesModule(records.assessments);
         $loader.hide();
     })
 }
 
 
 function makeHeading(data) {
-
-    $('#address').html(buildAddress(data.assessments[0]));
+    console.log(data);
+    $('#address').html(buildAddress(data.assessments));
     $('#basic-info').html()
 }
 
@@ -61,9 +63,9 @@ function makeFrontPage(data) {
 
     const $svImg = $('#sv-image');
     $svImg.attr('src', "");
-    let records = data.data.assessments[0];
+    let records = data.data.assessments;
     const streetViewUrl = "https://maps.googleapis.com/maps/api/streetview";
-    let centroid = data.geo.centroid.coordinates;
+    let centroid = data.geos.centroid.coordinates;
     const params = {
         key: "AIzaSyCcLG-dRLxiRB22U9cSv1jaP6XxoOn5aSY",
         location: records['PROPERTYHOUSENUM'] + " " + records['PROPERTYADDRESS'] + records['PROPERTYCITY'] + ", " + records['PROPERTYSTATE'] + " " + records['PROPERTYZIP'],
