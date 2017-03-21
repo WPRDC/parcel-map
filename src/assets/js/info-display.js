@@ -58,11 +58,11 @@ function makeFrontPage(data) {
 
     let $loader = $('#front-page').find('.loader');
     $loader.show();
-
+    console.log("DATA", data);
 
     const $svImg = $('#sv-image');
     $svImg.attr('src', "");
-    let records = data.data.assessments;
+    let records = data.data.assessments[0];
     const streetViewUrl = "https://maps.googleapis.com/maps/api/streetview";
     let centroid = data.geos.centroid.coordinates;
     const params = {
@@ -158,7 +158,6 @@ function makeBasicInfo(data) {
     let check = 0;
     const $info = $("#basic-info");
     const fields = {
-        "PARID": "PIN",
         "OWNERDESC": "Owner Type",
         "CLASSDESC": "Use Class",
         "USEDESC": "Land Use",
@@ -166,6 +165,8 @@ function makeBasicInfo(data) {
     };
 
     $info.empty();
+    $info.append("<li><span class='data-title'>" + "Parcel ID" + ": </span><span class='data-result'>" + currentPin+ "</span></li>");
+
     for (let key in fields) {
         if (fields.hasOwnProperty(key)) {
             if (key == "LOTAREA") {
