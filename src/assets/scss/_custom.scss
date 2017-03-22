@@ -7,6 +7,22 @@ body {
   margin: 0
 }
 
+
+// FOUC Fix
+.no-js {
+  @include breakpoint(small only) {
+    .top-bar {
+      display: none;
+    }
+  }
+
+  @include breakpoint(medium) {
+    .title-bar {
+      display: none;
+    }
+  }
+}
+
 @media screen and #{breakpoint(medium)} {
   .flex-container {
     height: 100vh;
@@ -30,8 +46,8 @@ body {
   }
 
   .flex-item:nth-child(3) {
-    height: 50px;
-    flex-shrink: 0;
+    height: 2.5rem;
+    flex-shrink: 1;
   }
 
 

@@ -298,7 +298,7 @@ function makeSalesModule(data) {
         $salesTable.append('<table class="responsive"></table>');
         $salesTable.find('table').append('<thead><tr><th>Sale Date</th><th>Price</th></tr></thead><tbody></tbody>');
         for (let i = 0; i < salesData.length; i++) {
-            var record = salesData[i];
+            let record = salesData[i];
             // var saledate = moment(record['SALEDATE']);
             $salesTable.find('tbody').append('<tr>' + '<td>' + record['d'] + '</td>' + '<td> $' + commafy(record['p']) + '</td>' + '</tr>');
         }
