@@ -1,10 +1,10 @@
 <div class="tab-holder">
     <ul class="tabs" data-tabs id="search-tabs">
         <li class="tabs-title is-active"><a href="#panel1" aria-selected="true">Address</a></li>
-        <li class="tabs-title"><a href="#panel2">PIN</a></li>
+        <li class="tabs-title"><a href="#panel2">Parcel ID</a></li>
     </ul>
 </div>
-<div class="tabs-content" data-tabs-content="search-tabs">
+<div class="tabs-content" data-tabs-content="search-tabs" id="search-tab-content">
     <!-- Address tab -->
     <div class="tabs-panel is-active" id="panel1">
         <h6 class="text-center">Search by Address</h6>
@@ -38,7 +38,7 @@
             <br>
             <div class="row collapse">
                 <div class="small-3 small-centered columns">
-                    <input autocomplete="off" id="search-button" type="button" class="expanded button"
+                    <input autocomplete="off" id="search-button" type="button" class="button expanded success hollow"
                            value="Search">
                 </div>
             </div>
@@ -49,14 +49,25 @@
     <div class="tabs-panel" id="panel2">
         <h6 class="text-center">Search by Parcel ID</h6>
         <form id="pin-search">
-            <div class="input-group">
+            <div class="input-group" style="margin-bottom: 0;">
                 <input id="pin-search-box" class="input-group-field search-box" type="text"
                        placeholder="0028F00193000000">
+
                 <div class="input-group-button search-button">
                     <input id="pin-search-button" type="button" class="button" value="Search">
                 </div>
             </div>
+            <p class="alert-minor" style="font-size: 75%;">County 16-digit PIN</p>
         </form>
     </div>
+    <!-- Search Results-->
+    <div id="search-premsg"></div>
+    <table id="search-results">
+        <tbody>
+        </tbody>
+    </table>
+    <div id="search-msg"></div>
+
 </div>
+
 

@@ -217,6 +217,7 @@ const baseMap = L.tileLayer('http://korona.geog.uni-heidelberg.de/tiles/roads/x=
 // });
 
 /*
+
  * ============================================================================
  * | MAP INITIALIZATION |
  * ============================================================================
@@ -225,7 +226,8 @@ const baseMap = L.tileLayer('http://korona.geog.uni-heidelberg.de/tiles/roads/x=
 // Instantiate main leaflet Map
 const map = new L.Map('map', {
     center: [40.45, -79.9959],
-    zoom: 13
+    zoom: 13,
+    maxZoom: 18
 });
 
 

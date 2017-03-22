@@ -27,7 +27,6 @@ function displayParcelData(pin, pan) {
     let $loader = $('#address-container').find('.loader');
     $loader.show();
     $.get(parcelAPIUrl + pin, function (data) {
-        console.log("DATA: ", data);
         if (pan) {
             let latlng = data.results[0].geos.centroid.coordinates.reverse();
             map.setView(latlng, 18)
@@ -58,7 +57,6 @@ function makeFrontPage(data) {
 
     let $loader = $('#front-page').find('.loader');
     $loader.show();
-    console.log("DATA", data);
 
     const $svImg = $('#sv-image');
     $svImg.attr('src', "");
@@ -117,7 +115,6 @@ function makeFrontPage(data) {
 
 
 function makeAssessment(data) {
-    console.log("ASSESMENT", data);
     // Assessment values table
     $('#building-val').empty().append(currency(data['COUNTYBUILDING']));
     $('#land-val').empty().append(currency(data['COUNTYLAND']));
@@ -182,7 +179,6 @@ function makeBasicInfo(data) {
 }
 
 function makeCodeViolationsModule(data) {
-    console.log("CODE VIOLATIONS", data);
     let $codeViolations = $('#code-violations'),
         violations = {};
 
@@ -298,7 +294,7 @@ function makeSalesModule(data) {
         $salesTable.append('<table class="responsive"></table>');
         $salesTable.find('table').append('<thead><tr><th>Sale Date</th><th>Price</th></tr></thead><tbody></tbody>');
         for (let i = 0; i < salesData.length; i++) {
-            var record = salesData[i];
+            let record = salesData[i];
             // var saledate = moment(record['SALEDATE']);
             $salesTable.find('tbody').append('<tr>' + '<td>' + record['d'] + '</td>' + '<td> $' + commafy(record['p']) + '</td>' + '</tr>');
         }

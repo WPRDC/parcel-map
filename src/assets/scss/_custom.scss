@@ -7,6 +7,22 @@ body {
   margin: 0
 }
 
+
+// FOUC Fix
+.no-js {
+  @include breakpoint(small only) {
+    .top-bar {
+      display: none;
+    }
+  }
+
+  @include breakpoint(medium) {
+    .title-bar {
+      display: none;
+    }
+  }
+}
+
 @media screen and #{breakpoint(medium)} {
   .flex-container {
     height: 100vh;
@@ -30,8 +46,8 @@ body {
   }
 
   .flex-item:nth-child(3) {
-    height: 50px;
-    flex-shrink: 0;
+    height: 2.5rem;
+    flex-shrink: 1;
   }
 
 
@@ -204,4 +220,49 @@ path.line {
   width: 100%;
   display: inline-block;
   text-align: center !important;
+}
+
+.search-result-list {
+  max-height: 25vh;
+  overflow: auto;
+}
+
+
+.prediction {
+  list-style-type: none;
+  position: absolute;
+  margin-left: .5rem;
+
+  background: white;
+}
+
+.prediction-result {
+  cursor: pointer;
+  &:hover {
+    background-color: #0c4d78;
+  }
+}
+
+.ui-autocomplete {
+  max-height: 100px;
+  z-index: 1000;
+
+}
+.search-result {
+  border: 1px solid $black;
+  p {
+    margin-bottom: 0;
+  }
+}
+
+.search-pin {
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+  cursor: hand;
+}
+
+.search-addr{
+  font-size: 60%;
+  text-align: center;
 }

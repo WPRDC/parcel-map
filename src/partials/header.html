@@ -1,10 +1,13 @@
 <div class="top-bar">
+
     <div class="top-bar-title">
-    <span data-responsive-toggle="responsive-menu" data-hide-for="medium">
-      <button class="menu-icon dark" type="button" data-toggle></button>
-    </span>
-        <strong>Property Map</strong>
+        <span data-responsive-toggle="responsive-menu" data-hide-for="medium">
+            <button class="menu-icon dark" type="button" data-toggle></button>
+        </span>
+            <div class="top-bar-title"><img src="../assets/img/grayscale_logo.png"
+                                        style="max-height: 2.5rem;"><strong> Property Map</strong></div>
     </div>
+
     <div id="responsive-menu">
         <div class="top-bar-left">
         </div>
@@ -12,11 +15,15 @@
             <ul class="menu">
                 <!--<li><input id="top-search" type="search" placeholder="Search Parcel ID"></li>-->
                 <!--<li><button id="top-search-button" type="button" class="button">Search</button></li>-->
-                <li><button id="search-menu-button" type="button" class="button no-close" data-toggle="search-dropdown">Search...</button></li>
+                <li>
+                    <button id="search-menu-button" type="button" class="button no-close secondary hollow" data-toggle="search-dropdown">
+                        Search &#9660;
+                    </button>
+                </li>
             </ul>
         </div>
         <div class="dropdown-pane bottom right no-close" id="search-dropdown" data-dropdown data-auto-focus="true">
-            {{>addr-search}}
+            {{>search}}
         </div>
     </div>
 </div>
