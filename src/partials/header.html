@@ -1,18 +1,32 @@
 <div class="top-bar">
+
     <div class="top-bar-title">
-    <span data-responsive-toggle="responsive-menu" data-hide-for="medium">
-      <button class="menu-icon dark" type="button" data-toggle></button>
-    </span>
-        <strong>Property Map</strong>
+        <span data-responsive-toggle="responsive-menu" data-hide-for="medium">
+            <button class="menu-icon dark" type="button" data-toggle></button>
+        </span>
+        <div class="top-bar-title">
+            <img src="../assets/img/grayscale_logo.png" style="max-height: 2.5rem;">
+            <span class="main-title"> Property Map (preview)</span>
+        </div>
     </div>
+
     <div id="responsive-menu">
         <div class="top-bar-left">
         </div>
         <div class="top-bar-right">
             <ul class="menu">
-                <li><input id="top-search" type="search" placeholder="Search Parcel ID"></li>
-                <li><button id="top-search-button" type="button" class="button">Search</button></li>
+                <!--<li><input id="top-search" type="search" placeholder="Search Parcel ID"></li>-->
+                <!--<li><button id="top-search-button" type="button" class="button">Search</button></li>-->
+                <li>
+                    <button id="search-menu-button" type="button" class="button no-close secondary hollow"
+                            data-toggle="search-dropdown">
+                        Search &#9660;
+                    </button>
+                </li>
             </ul>
+        </div>
+        <div class="dropdown-pane bottom right no-close" id="search-dropdown" data-dropdown data-auto-focus="true">
+            {{>search}}
         </div>
     </div>
 </div>

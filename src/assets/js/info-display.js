@@ -2,54 +2,67 @@
  * Created by SDS25 on 3/3/2017.
  */
 
-const parcelAPIUrl = "http://tools.wprdc.org/property-api/parcel/";
+const parcelAPIUrl = "http://tools.wprdc.org/property-api/v1/parcels/";
 
 
 // Tab Listeners
 $('#assessment-tab').on('click', function () {
     if (lastVizPins.assessment != currentPin) {
         $.get(parcelAPIUrl + currentPin, function (data) {
-            makeAssessment(data.data.assessments[0])
+            makeAssessment(data.results[0].data.assessments[0])
         })
     }
 });
 $('#sales-tab').on('click', function () {
     if (lastVizPins.sales != currentPin) {
         $.get(parcelAPIUrl + currentPin, function (data) {
-            makeSalesModule(data.data.assessments[0])
+            makeSalesModule(data.results[0].data.assessments[0])
         })
     }
 });
 
 function displayParcelData(pin, pan) {
+    console.log(pin);
     currentPin = pin;
 
     let $loader = $('#address-container').find('.loader');
     $loader.show();
     $.get(parcelAPIUrl + pin, function (data) {
-
         if (pan) {
-            let latlng = data.geo.centroid.coordinates.reverse();
-            console.log(latlng);
+            let latlng = data.results[0].geos.centroid.coordinates.reverse();
             map.setView(latlng, 18)
         }
 
-        const records = data.data;
+        const records = data.results[0].data;
+        console.log(records);
         // Build modules
         makeHeading(records);
-        makeFrontPage(data);
+        makeFrontPage(data.results[0]);
         makeAssessment(records.assessments[0]);
         makeBasicInfo(records.assessments[0]);
         makeRegionsModule(records.centroids_and_geo_info[0]);
         makeCodeViolationsModule(records.pli_violations);
         makeSalesModule(records.assessments[0]);
+        makeLiens(records.tax_liens[0]);
+
         $loader.hide();
     })
 }
 
+function makeLiens(data) {
+    let $list = $('#lien-data');
+    $list.empty();
+    console.log("LEIN DATA", data);
+    if (typeof(data) !== 'undefined') {
+        $list.append("<li><span class='data-title'>Number of Liens:</span><span class='data-result'>" + data.number + "</span></li>");
+        $list.append("<li><span class='data-title'>Total Amount:</span><span class='data-result'>" + currency(data.total_amount) + "</span></li>");
+    } else {
+        $list.append("<li><span class='alert-minor'>No liens were found for this property.</span>")
+    }
+}
+
 
 function makeHeading(data) {
-
     $('#address').html(buildAddress(data.assessments[0]));
     $('#basic-info').html()
 }
@@ -59,12 +72,11 @@ function makeFrontPage(data) {
     let $loader = $('#front-page').find('.loader');
     $loader.show();
 
-
     const $svImg = $('#sv-image');
     $svImg.attr('src', "");
     let records = data.data.assessments[0];
     const streetViewUrl = "https://maps.googleapis.com/maps/api/streetview";
-    let centroid = data.geo.centroid.coordinates;
+    let centroid = data.geos.centroid.coordinates;
     const params = {
         key: "AIzaSyCcLG-dRLxiRB22U9cSv1jaP6XxoOn5aSY",
         location: records['PROPERTYHOUSENUM'] + " " + records['PROPERTYADDRESS'] + records['PROPERTYCITY'] + ", " + records['PROPERTYSTATE'] + " " + records['PROPERTYZIP'],
@@ -72,6 +84,7 @@ function makeFrontPage(data) {
     };
 
     let imgUrl = streetViewUrl + '?' + $.param(params);
+
     $.get(streetViewUrl + "/metadata?" + $.param(params))
         .done(function (data) {
             if (data.status == 'OK') {
@@ -156,7 +169,6 @@ function makeBasicInfo(data) {
     let check = 0;
     const $info = $("#basic-info");
     const fields = {
-        "PARID": "PIN",
         "OWNERDESC": "Owner Type",
         "CLASSDESC": "Use Class",
         "USEDESC": "Land Use",
@@ -164,6 +176,8 @@ function makeBasicInfo(data) {
     };
 
     $info.empty();
+    $info.append("<li><span class='data-title'>" + "Parcel ID" + ": </span><span class='data-result'>" + currentPin + "</span></li>");
+
     for (let key in fields) {
         if (fields.hasOwnProperty(key)) {
             if (key == "LOTAREA") {
@@ -197,9 +211,7 @@ function makeCodeViolationsModule(data) {
     }
     else {
         for (let i = 0; i < data.length; i++) {
-            record = data[i];
-            console.log(record);
-
+            let record = data[i];
             if (!(record['CASE_NUMBER'] in violations)) {
                 violations[record['CASE_NUMBER']] = []
             }
@@ -214,10 +226,9 @@ function makeCodeViolationsModule(data) {
 
         for (let caseNo in violations) {
             if (violations.hasOwnProperty(caseNo)) {
-                console.log(violations);
                 $codeViolations.append("<h5> Case #: " + caseNo + "</h5>");
                 for (let k = 0; k < violations[caseNo].length; k++) {
-                    $newList = $("<ul class='data-list' id='" + caseNo + "-" + k + "'></ul>");
+                    let $newList = $("<ul class='data-list' id='" + caseNo + "-" + k + "'></ul>");
                     $codeViolations.append($newList);
                     for (let key in fields) {
                         if (key != 'CASE_NUMBER') {
@@ -276,20 +287,19 @@ function makeRegionsModule(data) {
 
 
 function makeSalesModule(data) {
-    $salesTable = $('#sales-table');
+    let $salesTable = $('#sales-table');
     $salesTable.empty();
     let salesData = [];
 
-    if (data["SALEDATE"]) {
-        salesData.push({'d': data["SALEDATE"], 'p': data["SALEPRICE"]});
+    if (data["PREVSALEDATE2"]) {
+        salesData.push({'d': data["PREVSALEDATE2"], 'p': data["PREVSALEPRICE2"]});
     }
     if (data["PREVSALEDATE"]) {
         salesData.push({'d': data["PREVSALEDATE"], 'p': data["PREVSALEPRICE"]});
     }
-    if (data["PREVSALEDATE2"]) {
-        salesData.push({'d': data["PREVSALEDATE2"], 'p': data["PREVSALEPRICE2"]});
+    if (data["SALEDATE"]) {
+        salesData.push({'d': data["SALEDATE"], 'p': data["SALEPRICE"]});
     }
-
 
     $salesTable.empty();
     // If there are records, create the table
@@ -297,7 +307,7 @@ function makeSalesModule(data) {
         $salesTable.append('<table class="responsive"></table>');
         $salesTable.find('table').append('<thead><tr><th>Sale Date</th><th>Price</th></tr></thead><tbody></tbody>');
         for (let i = 0; i < salesData.length; i++) {
-            var record = salesData[i];
+            let record = salesData[i];
             // var saledate = moment(record['SALEDATE']);
             $salesTable.find('tbody').append('<tr>' + '<td>' + record['d'] + '</td>' + '<td> $' + commafy(record['p']) + '</td>' + '</tr>');
         }
@@ -309,3 +319,5 @@ function makeSalesModule(data) {
         makeSalesChart(salesData);
     }
 }
+
+
