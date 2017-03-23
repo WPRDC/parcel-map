@@ -37,7 +37,7 @@ function makeAssmtDist(zip, asmtVal, svgSelector) {
             let svg = d3.select(svgSelector),
                 margin = {top: 10, right: 3, bottom: 30, left: 3},
                 width = svgWidth - 5,
-                height = parseInt(svg.style('height'), 10) - margin.top - margin.bottom,
+                height = parseInt(svg.style('height'), 10) - margin.top - margin.bottom - 5,
                 g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
             let x = d3.scaleLinear()
@@ -87,11 +87,23 @@ function makeAssmtDist(zip, asmtVal, svgSelector) {
             g.append("g")
                 .attr("class", "axis axis--x")
                 .attr("transform", "translate(0," + height + ")")
+                .text("Assessed Value ($)")
                 .call(d3.axisBottom(x));
+
+            // text label for the x axis
+            svg.append("text")
+                .attr("transform",
+                    "translate(" + (width/2) + " ," +
+                    (height + margin.top + 32) + ")")
+                .style("text-anchor", "middle")
+                .text("Assessed Value");
+
         })
         .fail(function () {
             alert('it failed')
         });
+
+
     lastVizPins.assessment = currentPin;
 }
 
@@ -160,6 +172,8 @@ function makeSalesChart(data) {
         .datum(data)
         .attr("class", "line")
         .attr("d", line);
+
+
 
     lastVizPins.sales = currentPin;
 }

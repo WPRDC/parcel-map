@@ -20,4 +20,6 @@ $(document).on('click', function (event) {
         // ...then use Foundation to trigger the dropdown close
         closeSearch();
     }
+
+
 });

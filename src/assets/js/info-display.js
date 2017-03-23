@@ -22,6 +22,7 @@ $('#sales-tab').on('click', function () {
 });
 
 function displayParcelData(pin, pan) {
+    console.log(pin);
     currentPin = pin;
 
     let $loader = $('#address-container').find('.loader');
@@ -33,18 +34,31 @@ function displayParcelData(pin, pan) {
         }
 
         const records = data.results[0].data;
+        console.log(records);
         // Build modules
         makeHeading(records);
         makeFrontPage(data.results[0]);
-
         makeAssessment(records.assessments[0]);
-
         makeBasicInfo(records.assessments[0]);
         makeRegionsModule(records.centroids_and_geo_info[0]);
         makeCodeViolationsModule(records.pli_violations);
         makeSalesModule(records.assessments[0]);
+        makeLiens(records.tax_liens[0]);
+
         $loader.hide();
     })
+}
+
+function makeLiens(data) {
+    let $list = $('#lien-data');
+    $list.empty();
+    console.log("LEIN DATA", data);
+    if (typeof(data) !== 'undefined') {
+        $list.append("<li><span class='data-title'>Number of Liens:</span><span class='data-result'>" + data.number + "</span></li>");
+        $list.append("<li><span class='data-title'>Total Amount:</span><span class='data-result'>" + currency(data.total_amount) + "</span></li>");
+    } else {
+        $list.append("<li><span class='alert-minor'>No liens were found for this property.</span>")
+    }
 }
 
 
@@ -162,7 +176,7 @@ function makeBasicInfo(data) {
     };
 
     $info.empty();
-    $info.append("<li><span class='data-title'>" + "Parcel ID" + ": </span><span class='data-result'>" + currentPin+ "</span></li>");
+    $info.append("<li><span class='data-title'>" + "Parcel ID" + ": </span><span class='data-result'>" + currentPin + "</span></li>");
 
     for (let key in fields) {
         if (fields.hasOwnProperty(key)) {
@@ -277,16 +291,15 @@ function makeSalesModule(data) {
     $salesTable.empty();
     let salesData = [];
 
-    if (data["SALEDATE"]) {
-        salesData.push({'d': data["SALEDATE"], 'p': data["SALEPRICE"]});
+    if (data["PREVSALEDATE2"]) {
+        salesData.push({'d': data["PREVSALEDATE2"], 'p': data["PREVSALEPRICE2"]});
     }
     if (data["PREVSALEDATE"]) {
         salesData.push({'d': data["PREVSALEDATE"], 'p': data["PREVSALEPRICE"]});
     }
-    if (data["PREVSALEDATE2"]) {
-        salesData.push({'d': data["PREVSALEDATE2"], 'p': data["PREVSALEPRICE2"]});
+    if (data["SALEDATE"]) {
+        salesData.push({'d': data["SALEDATE"], 'p': data["SALEPRICE"]});
     }
-
 
     $salesTable.empty();
     // If there are records, create the table
@@ -306,3 +319,5 @@ function makeSalesModule(data) {
         makeSalesChart(salesData);
     }
 }
+
+

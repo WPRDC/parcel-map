@@ -68,6 +68,9 @@ class Layer {
             if (options.hasOwnProperty('css')) {
                 shape.setCartoCSS(options.css);
             }
+            if (options.hasOwnProperty('interactivity')) {
+                shape.setInteractivity(options.interactivity);
+            }
             if (options.hasOwnProperty('featureClick')) {
                 layer.on('featureClick', options.featureClick);
             }
@@ -143,6 +146,7 @@ class LayerList {
 
 // When a parcel is clicked, highlight it
 function processParcel(e, latlng, pos, data, layer, pan) {
+    console.log("THE DATA", data);
     selectedLayer.clearLayers();
     cartoSQL.execute("SELECT the_geom FROM allegheny_county_parcel_boundaries WHERE pin = '{{id}}'",
         {
@@ -183,6 +187,7 @@ const cartoMaps = {
             "line-width: 0.5;" +
             "line-opacity: 0;" +
             "[zoom >= 15] {line-opacity: .8;}}",
+            interactivity: 'cartodb_id, address, pin',
             featureClick: processParcel
         }
     },
