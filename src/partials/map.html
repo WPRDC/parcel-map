@@ -1,3 +1,43 @@
-<!--<h4>Layer</h4>-->
+<h3 class="main-title" style="margin-top: 5px;">Map Controls</h3>
+<hr class="small-margin">
 
-    <!--{{> layer-menu}}-->
+<br>
+
+<h5><i class="material-icons" style="vertical-align: middle">place</i> Point Layer</h5>
+<form>
+    <select id="style_points-select" class="style-select">
+        <option value="">---</option>
+        <option value="trees">City-owned Trees</option>
+        <option value="intersections">Signalized Intersections</option>
+        <option value="water_features">City Water Features</option>
+        <option value="pat_stops">Port Authority Transit Stops</option>
+    </select>
+</form>
+<br>
+
+<h5><i class="material-icons" style="vertical-align: middle">layers</i> Overlay Layer</h5>
+<form>
+    <select id="style_region-select" class="style-select">
+        <option value="">---</option>
+        <option value="municipalities">Municipality</option>
+        <option value="pgh_hoods">Pgh Neighborhood</option>
+    </select>
+</form>
+<br>
+
+<h5><i class="material-icons" style="vertical-align: middle">format_paint</i> Parcel Layer Style</h5>
+
+<button class="button secondary hollow style-button" id="style-homestead"><i class="material-icons">home</i></button>
+<br>
+
+<h5><i class="material-icons" style="vertical-align:middle">map</i>Basemap</h5>
+<form>
+    <select id="basemap-select">
+        <option value="openMapSurfer">OpenMap Surfer (default)</option>
+        <option value="openStreetMap">OpenStreetMap</option>
+        <option value="stamenToner">Stamen Toner</option>
+        <option value="positron">Carto Positron</option>
+    </select>
+
+</form>
+<br>

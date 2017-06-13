@@ -37,7 +37,7 @@ class Layer {
         let self = this;
         let mapUrl = `https://wprdc.carto.com/api/v2/viz/${this.cartodbID}/viz.json`;
 
-        cartodb.createLayer(map, mapUrl )
+        cartodb.createLayer(map, mapUrl, {legends: true})
             .addTo(map)
             .on('done', function (layer) {
                 self.layer = layer;
@@ -70,6 +70,9 @@ class Layer {
             }
             if (options.hasOwnProperty('interactivity')) {
                 shape.setInteractivity(options.interactivity);
+            }
+            if (options.hasOwnProperty('interaction')) {
+                shape.setInteraction(options.ineraction);
             }
             if (options.hasOwnProperty('featureClick')) {
                 layer.on('featureClick', options.featureClick);
@@ -123,12 +126,15 @@ class LayerList {
         if (!this.contains(layer.name)) {
             this.layers.push(layer);
             layer.addTo(map);
+        } else {
+            this.replace(layer.name, layer);
         }
     }
 
     remove(layer) {
+        let l;
         if (typeof(layer) === 'string') {
-            let l = this.getLayer(layerName);
+            l = this.getLayer(layer);
         } else {
             l = layer
         }
@@ -140,6 +146,13 @@ class LayerList {
             return true;
         }
         return false
+    }
+
+    replace(layerName, layer) {
+        if (this.contains(layerName)) {
+            this.remove(layerName);
+            this.add(layer);
+        }
     }
 }
 
@@ -191,27 +204,134 @@ const cartoMaps = {
             featureClick: processParcel
         }
     },
-    neighborhoods: {
+
+    // Region boundaries
+    pgh_hoods: {
         "id": "5c486850-1c99-11e6-ac7e-0ecd1babdde5",
         "type": "Multipolygon",
         "defaultTitle": "Pittsburgh Neighborhoods",
-        "defaultOptions": {}
+        "defaultOptions": {
+            'css': "#layer{polygon-fill: #FFFFFF; polygon-opacity: 0; line-width: 3; [zoom <13]{line-width: 2} line-color: #000000; line-opacity: 0.8;}",
+            'interaction': false
+        }
     },
     municipalities: {
         "id": "af19fee2-234f-11e6-b598-0e3ff518bd15",
         "type": "Multipolygon",
         "defaultTitle": "Allegheny County Municipalities",
-        "defaultOptions": {}
+        "defaultOptions": {
+            'css': "#layer{polygon-fill: #FFFFFF; polygon-opacity: 0; line-width: 3; [zoom <13]{line-width: 2} line-color: #000000; line-opacity: 0.8;}",
+            'interaction': false
+        }
+    },
+
+    // Parcel Styling Layers
+    liens: {
+        "id": "724f2146-08d1-11e7-9e54-0e3ebc282e83",
+        "type": "Multipolygon",
+        "defaultTitle": "Allegheny County Tax Liens",
+        "defaultOptions": {
+            'css': "#layer {" +
+            "  line-width: 0;" +
+            "  line-color: #FFF;" +
+            "  line-opacity: 0.5;" +
+            "}" +
+            "#layer[total_amount<=1000] {" +
+            "  polygon-fill: #a7a500;" +
+            "  polygon-opacity: 1.0;" +
+            "}" +
+            "#layer[total_amount>1000][total_amount<=10000] {" +
+            "  polygon-fill: #ffa900;" +
+            "  polygon-opacity: 1.0;" +
+            "}" +
+            "#layer[total_amount>10000][total_amount<=100000] {" +
+            "  polygon-fill: #ff0000;" +
+            "  polygon-opacity: 1.0;" +
+            "}" +
+            "#layer[total_amount>100000] {" +
+            "  polygon-fill: #000;" +
+            "  polygon-opacity: 1.0;" +
+            "}",
+            'interaction': false
+        },
+    },
+    sales: {
+        "id": "5b2d4b7c-003a-11e7-b36e-0ee66e2c9693",
+        "type": "Multipolygon",
+        "defaultTitle": "Allegheny County Real Estate Sales",
+        "defaultOptions": {'interaction': false}
+    },
+    homestead: {
+        "id": "0642c99a-1483-11e7-b428-0e3ff518bd15",
+        "type": "Multipolygon",
+        "defaultTitle": "Allegheny County Real Estate Sales",
+        "defaultOptions": {'interaction': false}
+    },
+
+    // Point Layers
+    trees: {
+        "id": "5333373d-d413-4459-93b7-e93186c799f4",
+        "type": "Point",
+        "defaultTitle": "City Owned Trees",
+        "defaultOptions": {'interaction': false}
+    },
+    intersections: {
+        "id": "899611da-ff11-11e6-9875-0e3ff518bd15",
+        "type": "Point",
+        "defaultTitle": "Signalized Intersections",
+        "defaultOptions": {'interaction': false}
+    },
+    water_features: {
+        "id": "8238b908-ff0f-11e6-af2d-0e3ebc282e83",
+        "type": "Point",
+        "defaultTitle": "City Water Features",
+        "defaultOptions": {'interaction': false}
+    },
+    pat_stops: {
+        "id": "3e27bdae-ae88-11e6-8268-0e3ebc282e83",
+        "type": "Point",
+        "defaultTitle": "Port Authority Transit Stops",
+        "defaultOptions": {'interaction': false}
     }
 };
+
+
+const basemaps = {
+    openStreetMap: L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }),
+    openMapSurfer: L.tileLayer('http://korona.geog.uni-heidelberg.de/tiles/roads/x={x}&y={y}&z={z}', {
+        maxZoom: 20,
+        attribution: 'Imagery from <a href="http://giscience.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }),
+    positron: L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
+        subdomains: 'abcd',
+        maxZoom: 19
+    }),
+    stamenToner: L.tileLayer('http://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}.{ext}', {
+        attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        subdomains: 'abcd',
+        minZoom: 0,
+        maxZoom: 20,
+        ext: 'png'
+    }),
+    stamenWatercolor: L.tileLayer('http://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.{ext}', {
+        attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        subdomains: 'abcd',
+        minZoom: 1,
+        maxZoom: 16,
+        ext: 'png'
+    })
+};
+
+
 // Carto SQL engine
 const cartoSQL = new cartodb.SQL({user: 'wprdc'});
 
 // Set up basemap
-const baseMap = L.tileLayer('http://korona.geog.uni-heidelberg.de/tiles/roads/x={x}&y={y}&z={z}', {
-    maxZoom: 20,
-    attribution: 'Imagery from <a href="http://giscience.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-});
+let baseMap = basemaps.openMapSurfer;
 
 // const baseMap = L.tileLayer('http://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}.{ext}', {
 //     attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
@@ -247,16 +367,37 @@ const parcelLayer = new Layer(map, "base_parcel", "Parcels", "MultiPolygon", car
 
 layers.add(parcelLayer);
 
+
 //Define extra layer on which to apply selection highlights
 const selectedLayer = L.geoJson().addTo(map);
 
 
-$('#geo-submit').on('click', function () {
-    let layerType = $('#geo-select').val();
-    let mapID = cartoMaps[layerType]
+$('.style-button').on('click', function () {
+    let layerName = this.id.split('-')[1];
+    let buttonOn = toggleButton($(this));
+    layers.remove('style_parcel');
+    if (buttonOn) {
+        let styleLayer = new Layer(map, 'style_parcel', "", "MultiPolygon", cartoMaps[layerName].id, cartoMaps[layerName].defaultOptions);
+        layers.add(styleLayer);
+    }
 
-    let tempLayer = new Layer(map, layerType, layerType, "Multipolygon", mapID)
-    layers.add(tempLayer);
 });
 
+$('.style-select').on('change', function () {
+    let layerType = this.id.split('-')[0];
+    let layerName = $(this).val();
+    layers.remove(layerType);
+    if (layerName) {
+        let styleLayer = new Layer(map, layerType, "", "MultiPolygon", cartoMaps[layerName].id, cartoMaps[layerName].defaultOptions);
+        layers.add(styleLayer);
+    }
+});
 
+$('#basemap-select').on('change', function () {
+    let newBaseMap = basemaps[$(this).val()];
+    console.log($(this).val());
+    newBaseMap.setZIndex(-1000);
+    map.removeLayer(baseMap);
+    baseMap = newBaseMap;
+    baseMap.addTo(map, true);
+});

@@ -6,7 +6,6 @@ const defaultParcel = {pin: currentPin};
 
 
 $(window).resize(function () {
-    console.log('resize');
     $('#footer').height("2.5rem");
 });
 
@@ -20,6 +19,22 @@ $(document).on('click', function (event) {
         // ...then use Foundation to trigger the dropdown close
         closeSearch();
     }
+});
 
+let $slideButton = $('#slide-button');
+$slideButton.on('click', function(e){
+    let on = toggleButton($(this));
+    if(on){
+        $slideButton.html('<i class="material-icons">chevron_left</i>');
+        $('.off-canvas-absolute').foundation('open', e, this);
+    } else {
+        $slideButton.html('<i class="material-icons">chevron_right</i>');
+        $('.off-canvas-absolute').foundation('close');
+    }
 
+    e.stopPropagation();
+});
+
+$slideButton.on('hover', function(e){
+    e.stopPropagation();
 });

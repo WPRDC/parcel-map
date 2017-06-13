@@ -5,8 +5,8 @@
             <button class="menu-icon dark" type="button" data-toggle></button>
         </span>
         <div class="top-bar-title">
-            <img src="../assets/img/grayscale_logo.png" style="max-height: 2.5rem;">
-            <span class="main-title"> Property Map (preview)</span>
+            <img src="../assets/img/grayscale_logo_simple.png" style="max-height: 1.4rem;">
+            <span class="main-title" style="vertical-align: bottom;">WPRDC | Property Dashboard (preview)</span>
         </div>
     </div>
 
@@ -15,16 +15,18 @@
         </div>
         <div class="top-bar-right">
             <ul class="menu">
-                <!--<li><input id="top-search" type="search" placeholder="Search Parcel ID"></li>-->
-                <!--<li><button id="top-search-button" type="button" class="button">Search</button></li>-->
                 <li>
-                    <button id="search-menu-button" type="button" class="button no-close secondary hollow"
+
+                </li>
+                <li>
+                    <button id="search-menu-button" type="button" class="small button no-close secondary hollow"
                             data-toggle="search-dropdown">
                         Search &#9660;
                     </button>
                 </li>
             </ul>
         </div>
+
         <div class="dropdown-pane bottom right no-close" id="search-dropdown" data-dropdown data-auto-focus="true">
             {{>search}}
         </div>

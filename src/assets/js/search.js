@@ -5,12 +5,10 @@
  * Address Search
  */
 $('#search-button').on('click', function () {
-    console.log("clicked");
     let num = $('#num').val(),
         street = $('#street').val().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "").toUpperCase(),
         city = $('#city').val().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "").toUpperCase(),
         zip = $('#zip').val();
-    console.log(num, street, city, zip);
     lookup_parsed_address(num, street, city, zip);
 });
 
@@ -38,7 +36,6 @@ function lookup_parsed_address(number, street, city, zip) {
         "\"PROPERTYCITY\" LIKE \'" + city + "\' AND " +
         "\"PROPERTYZIP\" LIKE \'" + zip + "\';";
 
-    console.log("DOING STUFF");
     $.ajax({
         url: "https://data.wprdc.org/api/action/datastore_search_sql?",
         data: {sql: stmt},
@@ -46,14 +43,12 @@ function lookup_parsed_address(number, street, city, zip) {
         dataType: "jsonp"
     }).done(function (data) {
         // if results, then display them
-        console.log(data);
         if (data.result.records.length) {
             display_search(data.result.records);
         }
         // if not, try a more general search
         else if (number.indexOf("%") < 0) {
             var new_num = ('' + number)[0] + "%";
-            // console.log(new_num, street, city, zip);
             lookup_parsed_address(new_num, street, city, zip);
         }
         // a more general search failed, so quit with no results
@@ -61,7 +56,6 @@ function lookup_parsed_address(number, street, city, zip) {
             display_search(null);
         }
     }).fail(function () {
-        console.log("fail");
         display_search(null);
     })
 }
@@ -74,7 +68,6 @@ function display_search(results) {
     $display.empty();
     $msg.empty();
     $premsg.empty();
-    // console.log(results);
     if (!results || !results.length) {
         $display.append("<p class='alert-minor'>No properties with that address found")
     }
@@ -107,12 +100,10 @@ function display_search(results) {
                 break;
             }
         }
-        // console.log(results);
     }
 }
 
 $("#search-results").on("click", ".search-pin", function () {
-    // console.log($(this).text());
     $("#search-results").empty();
     $("#search-premsg").empty();
     $("#search-msg").empty();
