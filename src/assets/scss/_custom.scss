@@ -4,7 +4,7 @@
 html,
 body {
   height: 100%;
-  margin: 0
+  margin: 0;
 }
 
 
@@ -79,29 +79,35 @@ body {
 
 }
 
-.inner-flex-item:nth-child(1) {
-  height: auto;
-  flex-grow: 0;
-  flex-shrink: 1;
-  //border: 2px solid blue;
-}
-
-.inner-flex-item:nth-child(2) {
-  display: block; /* 1 */
-  flex-grow: 1;
-  flex-shrink: 1;
-  overflow: auto;
-  min-height: 0;
-}
+//.inner-flex-item:nth-child(1) {
+//  height: auto;
+//  flex-grow: 0;
+//  flex-shrink: 1;
+//  //border: 2px solid blue;
+//}
+//
+//.inner-flex-item:nth-child(2) {
+//  display: block; /* 1 */
+//  flex-grow: 1;
+//  flex-shrink: 1;
+//  overflow: auto;
+//  min-height: 0;
+//}
 
 
 .expanded.row {
   margin: 0 0 0 0;
 }
 
+.expanded.column {
+  padding: 0;
+}
 #main-content {
   display: flex;
   align-items: stretch;
+  border-width: 1px 0;
+  border-style: solid;
+  border-color: $black;
 }
 
 #map path {
@@ -153,7 +159,7 @@ body {
   fill: $black;
 }
 .bar rect.hi {
-  fill: $primary-color;
+  fill: $success-color;
 }
 
 .bar text {
@@ -220,4 +226,95 @@ path.line {
   width: 100%;
   display: inline-block;
   text-align: center !important;
+}
+
+.search-result-list {
+  max-height: 25vh;
+  overflow: auto;
+}
+
+
+.prediction {
+  list-style-type: none;
+  position: absolute;
+  margin-left: .5rem;
+
+  background: white;
+}
+
+.prediction-result {
+  cursor: pointer;
+  &:hover {
+    background-color: #0c4d78;
+  }
+}
+
+.ui-autocomplete {
+  max-height: 100px;
+  z-index: 1000;
+
+}
+.search-result {
+  border: 1px solid $black;
+  p {
+    margin-bottom: 0;
+  }
+}
+
+.search-pin {
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+  cursor: hand;
+}
+
+.search-addr{
+  font-size: 60%;
+  text-align: center;
+}
+
+.indented {
+  padding-left: 1.5rem;
+}
+
+.main-title {
+  margin-left: .5rem;
+  font-size: 1.2rem;
+  font-family: $address-font;
+  vertical-align: bottom;
+  font-weight: 700;
+}
+
+.clickable {
+  cursor: pointer;
+  cursor: hand;
+}
+
+
+#slide-button {
+  position: absolute;
+  top: 45%;
+  left: 0;
+  z-index: 1000;
+  height: 5%;
+  width: 2rem;
+  padding: 1px;
+  i.on {
+    color: $white;
+  }
+}
+
+#map-settings {
+  border-top: 1px solid $black;
+  border-bottom: 1px solid $black;
+}
+
+#map-settings-header{
+  padding: 5px;
+  font-family: $address-font;
+}
+
+.style-button{
+  border-radius: 10px;
+
 }

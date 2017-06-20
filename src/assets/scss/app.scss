@@ -1,9 +1,13 @@
 @charset 'utf-8';
 
+
 @import 'settings';
 @import 'foundation';
 @import 'motion-ui';
-@import 'custom';
+
+@import 'jquery-ui/jquery-ui';
+@import 'jquery-ui/jquery-ui.structure';
+@import 'jquery-ui/jquery-ui.theme';
 
 @import 'components/loader';
 
@@ -52,3 +56,5 @@
 
 @include motion-ui-transitions;
 @include motion-ui-animations;
+
+@import 'custom';

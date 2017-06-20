@@ -1,6 +1,6 @@
-# WPRDC Property Map
+# WPRDC Property Dashboard
 
-
+http://tools.wprdc.org/property-dashboard/
 
 
 ## Installation

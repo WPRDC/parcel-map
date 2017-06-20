@@ -23,3 +23,18 @@ function isTabActive(tabId) {
     }
     return false
 }
+
+function toggleButton($btn) {
+    let on = false;
+    if ($btn.hasClass('on')) {
+        $btn.removeClass('on');
+        $btn.addClass('not-on');
+        on = false;
+    }
+    else {
+        $btn.removeClass('not-on');
+        $btn.addClass('on');
+        on = true;
+    }
+    return on;
+}
