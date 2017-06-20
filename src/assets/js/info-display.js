@@ -42,17 +42,46 @@ function displayParcelData(pin, pan) {
         makeCodeViolationsModule(records.pli_violations);
         makeSalesModule(records.assessments[0], records.sales);
         makeLiens(records.tax_liens[0]);
-
+        makeDelinquency(records['pgh-tax-delinquency'][0]);
+        makeTreasurySale(records['pgh-treasury-sales'][0]);
         $loader.hide();
     })
+}
+
+function makeDelinquency(data) {
+    let $list = $('#delinquency-data');
+    $list.empty();
+
+    if (typeof(data) !== 'undefined') {
+        $list.append("<li><span class='data-title'>Total Amount: </span><span class='data-result'>" + currency(data.current_delq) + "</span></li>");
+        $list.append("<li><span class='data-title'>Years Delinquent: </span><span class='data-result'>" + data.prior_years + "</span></li>");
+    } else {
+        $list.append("<li><span class='alert-minor'>No property tax delinquency was found for this property.</span>")
+    }
+}
+
+function makeTreasurySale(data) {
+    let $list = $('#treasurysale-data');
+    $list.empty();
+
+    if (typeof(data) !== 'undefined') {
+        $list.append("<li><span class='data-title'>Sale Date: </span><span class='data-result'>" + data.sale_date + "</span></li>");
+        $list.append("<li><span class='data-title'>Tax owed to City: </span><span class='data-result'>" + currency(data.city_owed) + "</span></li>");
+        $list.append("<li><span class='data-title'>Tax owed to Pittsburgh Public Schools: </span><span class='data-result'>" + currency(data.pps_owed) + "</span></li>");
+        $list.append("<li><span class='data-title'>Tax owed to County: </span><span class='data-result'>" + currency(data.county_owed) + "</span></li>");
+        $list.append("<li><span class='data-title'>Tax owed To Library: </span><span class='data-result'>" + currency(data.library_owed) + "</span></li>");
+        $list.append("<li><span class='data-title'>Tax owed To PWSA: </span><span class='data-result'>" + currency(data.pwsa_owed) + "</span></li>");
+    } else {
+        $list.append("<li><span class='alert-minor'>No property tax delinquency was found for this property.</span>")
+    }
 }
 
 function makeLiens(data) {
     let $list = $('#lien-data');
     $list.empty();
     if (typeof(data) !== 'undefined') {
-        $list.append("<li><span class='data-title'>Number of Liens:</span><span class='data-result'>" + data.number + "</span></li>");
-        $list.append("<li><span class='data-title'>Total Amount:</span><span class='data-result'>" + currency(data.total_amount) + "</span></li>");
+        $list.append("<li><span class='data-title'>Number of Liens: </span><span class='data-result'>" + data.number + "</span></li>");
+        $list.append("<li><span class='data-title'>Total Amount: </span><span class='data-result'>" + currency(data.total_amount) + "</span></li>");
     } else {
         $list.append("<li><span class='alert-minor'>No liens were found for this property.</span>")
     }
@@ -318,14 +347,14 @@ function makeSalesModule(asmtData, salesData) {
         makeSalesChart(salesTableData);
     }
     $newSales.append("<h3>Recent Sales</h3>");
-    if(salesData.length){
+    if (salesData.length) {
 
-        for (let idx= 0; idx < salesData.length; idx++) {
+        for (let idx = 0; idx < salesData.length; idx++) {
             let datum = salesData[idx];
             $newSales.append("<h5>" + datum['SALEDATE'] + "</h5>");
-            $newSales.append("<ul class='data-list' id='sale"+idx+"'></ul>");
-            $newSales.find("#sale"+idx).append("<li><span class='data-title'>Price: </span><span class='data-result'>" + datum['PRICE'] + "</span></li>");
-            $newSales.find("#sale"+idx).append("<li><span class='data-title'>Sale Code: </span><span class='data-result'>" + datum['SALECODE'] + "(" + datum['SALEDESC'] + ")</span></li>")
+            $newSales.append("<ul class='data-list' id='sale" + idx + "'></ul>");
+            $newSales.find("#sale" + idx).append("<li><span class='data-title'>Price: </span><span class='data-result'>" + datum['PRICE'] + "</span></li>");
+            $newSales.find("#sale" + idx).append("<li><span class='data-title'>Sale Code: </span><span class='data-result'>" + datum['SALECODE'] + "(" + datum['SALEDESC'] + ")</span></li>")
         }
     } else {
         $newSales.append("<p class='alert-minor'>There are no recent (post 2012) sales for this property.</p>")

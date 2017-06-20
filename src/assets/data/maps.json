@@ -1,7 +1,7 @@
 {
   "parcel": {
     "id": "75f76f2a-5e3a-11e6-bd76-0e3ff518bd15",
-    "type": "Multipolygon",
+    "geomType": "Multipolygon",
     "defaultTitle": "Parcels",
     "defaultOptions": {
       "locked": true,
@@ -13,7 +13,7 @@
   },
   "pgh_hoods": {
     "id": "5c486850-1c99-11e6-ac7e-0ecd1babdde5",
-    "type": "Multipolygon",
+    "geomType": "Multipolygon",
     "defaultTitle": "Pittsburgh Neighborhoods",
     "defaultOptions": {
       "css": "#layer{polygon-fill: #FFFFFF; polygon-opacity: 0; line-width: 3; [zoom <13]{line-width: 2} line-color: #000000; line-opacity: 0.8;}",
@@ -22,7 +22,7 @@
   },
   "municipalities": {
     "id": "af19fee2-234f-11e6-b598-0e3ff518bd15",
-    "type": "Multipolygon",
+    "geomType": "Multipolygon",
     "defaultTitle": "Allegheny County Municipalities",
     "defaultOptions": {
       "css": "#layer{polygon-fill: #FFFFFF; polygon-opacity: 0; line-width: 3; [zoom <13]{line-width: 2} line-color: #000000; line-opacity: 0.8;}",
@@ -31,7 +31,7 @@
   },
   "liens": {
     "id": "724f2146-08d1-11e7-9e54-0e3ebc282e83",
-    "type": "Multipolygon",
+    "geomType": "Multipolygon",
     "defaultTitle": "Allegheny County Tax Liens",
     "defaultOptions": {
       "css": "#layer {line-width: 0;  line-color: #FFF;  line-opacity: 0.5;}#layer[total_amount<=1000] {polygon-fill: #a7a500;  polygon-opacity: 1.0;}#layer[total_amount>1000][total_amount<=10000] {polygon-fill: #ffa900;  polygon-opacity: 1.0;}#layer[total_amount>10000][total_amount<=100000] {polygon-fill: #ff0000;  polygon-opacity: 1.0;}#layer[total_amount>100000] {polygon-fill: #000;  polygon-opacity: 1.0;}",
@@ -40,7 +40,7 @@
   },
   "sales": {
     "id": "bde78cdc-1557-11e7-87a3-0e3ebc282e83",
-    "type": "Multipolygon",
+    "geomType": "Multipolygon",
     "defaultTitle": "Allegheny County Real Estate Sales",
     "defaultOptions": {
       "interaction": false
@@ -48,7 +48,7 @@
   },
   "trees": {
     "id": "5333373d-d413-4459-93b7-e93186c799f4",
-    "type": "Point",
+    "geomType": "Point",
     "defaultTitle": "City Owned Trees",
     "defaultOptions": {
       "interaction": false
@@ -56,7 +56,7 @@
   },
   "intersections": {
     "id": "899611da-ff11-11e6-9875-0e3ff518bd15",
-    "type": "Point",
+    "geomType": "Point",
     "defaultTitle": "Signalized Intersections",
     "defaultOptions": {
       "interaction": false
@@ -64,7 +64,7 @@
   },
   "pat_stops": {
     "id": "3e27bdae-ae88-11e6-8268-0e3ebc282e83",
-    "type": "Point",
+    "geomType": "Point",
     "defaultTitle": "Port Authority Transit Stops",
     "defaultOptions": {
       "interaction": false
