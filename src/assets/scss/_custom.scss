@@ -318,3 +318,9 @@ path.line {
   border-radius: 10px;
 
 }
+
+#info-container {
+  overflow-x: auto;
+}
+
+#map .cartodb-legend-stack { position: absolute; left: 60px;  width: 250px;}

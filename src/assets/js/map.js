@@ -12,17 +12,18 @@ class Layer {
     /**
      * Map Layer
      *
-     * @param name
-     * @param title
-     * @param type
+     * @param {string} name - identifier for layer
+     * @param {string} title - human readable name of the layer to display on page
+     * @param {string} type -
      * @param cartodbID
      * @param map
      * @param options
      */
-    constructor(map, name, title, type, cartodbID, options) {
+    constructor(map, name, title, type, cartodbAccount, cartodbID, options) {
         this.name = name;
         this.title = title;
-        this.type = type;
+        this.geomType = type;
+        this.account= cartodbAccount
         this.cartodbID = cartodbID;
         this.map = map;
         this.options = options;
@@ -35,13 +36,13 @@ class Layer {
 
     addTo(map) {
         let self = this;
-        let mapUrl = `https://wprdc.carto.com/api/v2/viz/${this.cartodbID}/viz.json`;
+        let mapUrl = `https://wprdc-maps.carto.com/u/${this.account}/api/v2/viz/${this.cartodbID}/viz.json`;
 
         cartodb.createLayer(map, mapUrl, {legends: true})
             .addTo(map)
             .on('done', function (layer) {
                 self.layer = layer;
-                if (typeof self.options != 'undefined') {
+                if (typeof self.options !== 'undefined') {
                     console.log('modifying');
                     self.modify(self.options);
                 }
@@ -56,7 +57,7 @@ class Layer {
         this.options = options;
         let layer = this.layer;
         let shape;
-        if (typeof(options) != 'undefined') {
+        if (typeof(options) !== 'undefined') {
             if (options.hasOwnProperty('main_sublayer')) {
                 shape = layer.getSubLayer(options.main_sublayer);
             } else {
@@ -80,6 +81,9 @@ class Layer {
             if (options.hasOwnProperty('featureOver')) {
                 layer.on('featureOver', options.featureOver);
             }
+            if (options.hasOwnProperty('legends')){
+                shape.set({'legends': true})
+            }
         }
     }
 
@@ -101,7 +105,7 @@ class LayerList {
 
     getLayer(layerName) {
         for (let layer of this.layers) {
-            if (layer.name == layerName) {
+            if (layer.name === layerName) {
                 return layer
             }
         }
@@ -110,7 +114,7 @@ class LayerList {
 
     contains(layerName) {
         for (let layer of this.layers) {
-            if (layer.name == layerName) {
+            if (layer.name === layerName) {
                 return true;
             }
         }
@@ -139,7 +143,7 @@ class LayerList {
             l = layer
         }
 
-        if (typeof(l) != 'undefined') {
+        if (typeof(l) !== 'undefined') {
             this.map.removeLayer(l.layer);
             let i = this.layers.indexOf(l);
             this.layers.splice(i, 1);
@@ -187,6 +191,7 @@ function processParcel(e, latlng, pos, data, layer, pan) {
 const cartoMaps = {
     parcel: {
         "id": "75f76f2a-5e3a-11e6-bd76-0e3ff518bd15",
+        "account": "wprdc",
         "type": "Multipolygon",
         "defaultTitle": "Parcels",
         "defaultOptions": {
@@ -208,6 +213,7 @@ const cartoMaps = {
     // Region boundaries
     pgh_hoods: {
         "id": "5c486850-1c99-11e6-ac7e-0ecd1babdde5",
+        "account": "wprdc",
         "type": "Multipolygon",
         "defaultTitle": "Pittsburgh Neighborhoods",
         "defaultOptions": {
@@ -217,6 +223,7 @@ const cartoMaps = {
     },
     municipalities: {
         "id": "af19fee2-234f-11e6-b598-0e3ff518bd15",
+        "account": "wprdc",
         "type": "Multipolygon",
         "defaultTitle": "Allegheny County Municipalities",
         "defaultOptions": {
@@ -227,42 +234,25 @@ const cartoMaps = {
 
     // Parcel Styling Layers
     liens: {
-        "id": "724f2146-08d1-11e7-9e54-0e3ebc282e83",
+        "id": "2ac98314-c5b9-4730-ae79-71c80dbd8790",
+        "account": "wprdc-editor",
         "type": "Multipolygon",
         "defaultTitle": "Allegheny County Tax Liens",
         "defaultOptions": {
-            'css': "#layer {" +
-            "  line-width: 0;" +
-            "  line-color: #FFF;" +
-            "  line-opacity: 0.5;" +
-            "}" +
-            "#layer[total_amount<=1000] {" +
-            "  polygon-fill: #a7a500;" +
-            "  polygon-opacity: 1.0;" +
-            "}" +
-            "#layer[total_amount>1000][total_amount<=10000] {" +
-            "  polygon-fill: #ffa900;" +
-            "  polygon-opacity: 1.0;" +
-            "}" +
-            "#layer[total_amount>10000][total_amount<=100000] {" +
-            "  polygon-fill: #ff0000;" +
-            "  polygon-opacity: 1.0;" +
-            "}" +
-            "#layer[total_amount>100000] {" +
-            "  polygon-fill: #000;" +
-            "  polygon-opacity: 1.0;" +
-            "}",
+            'legends': true,
             'interaction': false
         },
     },
     sales: {
         "id": "5b2d4b7c-003a-11e7-b36e-0ee66e2c9693",
+        "account": "wprdc",
         "type": "Multipolygon",
         "defaultTitle": "Allegheny County Real Estate Sales",
         "defaultOptions": {'interaction': false}
     },
     homestead: {
         "id": "0642c99a-1483-11e7-b428-0e3ff518bd15",
+        "account": "wprdc",
         "type": "Multipolygon",
         "defaultTitle": "Allegheny County Real Estate Sales",
         "defaultOptions": {'interaction': false}
@@ -271,24 +261,28 @@ const cartoMaps = {
     // Point Layers
     trees: {
         "id": "5333373d-d413-4459-93b7-e93186c799f4",
+        "account": "wprdc",
         "type": "Point",
         "defaultTitle": "City Owned Trees",
         "defaultOptions": {'interaction': false}
     },
     intersections: {
         "id": "899611da-ff11-11e6-9875-0e3ff518bd15",
+        "account": "wprdc",
         "type": "Point",
         "defaultTitle": "Signalized Intersections",
         "defaultOptions": {'interaction': false}
     },
     water_features: {
         "id": "8238b908-ff0f-11e6-af2d-0e3ebc282e83",
+        "account": "wprdc",
         "type": "Point",
         "defaultTitle": "City Water Features",
         "defaultOptions": {'interaction': false}
     },
     pat_stops: {
         "id": "3e27bdae-ae88-11e6-8268-0e3ebc282e83",
+        "account": "wprdc",
         "type": "Point",
         "defaultTitle": "Port Authority Transit Stops",
         "defaultOptions": {'interaction': false}
@@ -362,7 +356,7 @@ baseMap.addTo(map);
 const layers = new LayerList(map);
 
 // Main parcel layer for selection and so on
-const parcelLayer = new Layer(map, "base_parcel", "Parcels", "MultiPolygon", cartoMaps.parcel.id, cartoMaps.parcel.defaultOptions);
+const parcelLayer = new Layer(map, "base_parcel", "Parcels", "MultiPolygon", cartoMaps.parcel.account, cartoMaps.parcel.id, cartoMaps.parcel.defaultOptions);
 
 
 layers.add(parcelLayer);
@@ -377,7 +371,7 @@ $('.style-button').on('click', function () {
     let buttonOn = toggleButton($(this));
     layers.remove('style_parcel');
     if (buttonOn) {
-        let styleLayer = new Layer(map, 'style_parcel', "", "MultiPolygon", cartoMaps[layerName].id, cartoMaps[layerName].defaultOptions);
+        let styleLayer = new Layer(map, 'style_parcel', "", "MultiPolygon", cartoMaps[layerName].account, cartoMaps[layerName].id, cartoMaps[layerName].defaultOptions);
         layers.add(styleLayer);
     }
 
@@ -388,7 +382,7 @@ $('.style-select').on('change', function () {
     let layerName = $(this).val();
     layers.remove(layerType);
     if (layerName) {
-        let styleLayer = new Layer(map, layerType, "", "MultiPolygon", cartoMaps[layerName].id, cartoMaps[layerName].defaultOptions);
+        let styleLayer = new Layer(map, layerType, "", "MultiPolygon", cartoMaps[layerName].account, cartoMaps[layerName].id, cartoMaps[layerName].defaultOptions);
         layers.add(styleLayer);
     }
 });
