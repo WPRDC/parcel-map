@@ -1,0 +1,34 @@
+<div class="choropleth-control map-control">
+    <h5 class="map-control-title">Choropleth</h5>
+
+    <form>
+        <div class="row">
+            <div class="small-5 columns">
+                <label for="bins" class="text-right middle">Number of bins:</label>
+            </div>
+            <div class="small-7 columns">
+                <select id="bins">
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option selected="selected" value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-5 columns">
+                <label for="quantification" class="text-right middle">Quantification:</label>
+            </div>
+            <div class="small-7 columns">
+                <select id="quantification">
+                    <option value="quantile">Quantile</option>
+                    <option value="jenks">Jenks</option>
+                    <option value="equal">Equal Interval</option>
+                    <option value="heads-tails">Heads/Tails</option>
+                </select>
+            </div>
+        </div>
+    </form>
+
+</div>
