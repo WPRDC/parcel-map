@@ -1,0 +1,13 @@
+{
+  "datasets": {
+    "liens": {
+      "title": "Liens",
+      "cartoAccount": "wprdc-editor",
+      "cartoTable": "allegheny_county_tax_liens",
+      "fields": [
+        {"id": "total_amount", "name": "Total Amount", "info": "some info and stuff", "type": "numeric"},
+        {"id": "number", "name": "Number of Liens", "info": "some info and stuff2", "type": "numeric"}
+      ]
+    }
+  }
+}

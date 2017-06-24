@@ -169,18 +169,20 @@ body {
 .slim {
   margin: .2rem
 }
-
-.tabs {
-  .tabs-title {
-    border-style: solid;
-    border-width: 0 0 0 1px;
-    border-color: $light-gray;
-    &:first-of-type{
-      border-width: 0 1px 0 0;
+.dropdown-pane{
+  .tabs {
+    .tabs-title {
+      border-style: solid;
+      border-width: 0 0 0 1px;
+      border-color: $light-gray;
+      &:first-of-type{
+        border-width: 0 1px 0 0;
+      }
     }
-  }
 
+  }
 }
+
 
 
 .alert-minor {
@@ -220,13 +222,14 @@ path.line {
   .tabs-panel {
     padding: 0;
   }
+  .tab-holder {
+    width: 100%;
+    display: inline-block;
+    text-align: center !important;
+  }
 }
 
-.tab-holder {
-  width: 100%;
-  display: inline-block;
-  text-align: center !important;
-}
+
 
 .search-result-list {
   max-height: 25vh;
