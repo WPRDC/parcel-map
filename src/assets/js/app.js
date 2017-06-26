@@ -40,10 +40,9 @@ $slideButton.on('hover', function (e) {
 });
 
 
-$('#cutoffSlider').on('moved.zf.slider', function () {
-    console.log('woot');
+$('#rangeSlider').on('moved.zf.slider', function () {
     let v = $('#cutoffPoint').val();
-    $('#cutoffPointText').text(v);
+    $('#rangeValue').text(v);
 });
 
 
@@ -69,7 +68,7 @@ $.getJSON('assets/data/map-data.json', function (data) {
                 for (let j in fields) {
                     if (fields.hasOwnProperty(j)) {
                         let field = fields[j]
-                        $fieldSelects.append(`<option value="${j}"  data-type="${field['type']}" data-info="${field['info']}" >${field['name']}</option>`)
+                        $fieldSelects.append(`<option value="${field['id']}"  data-type="${field['type']}" data-info="${field['info']}" >${field['name']}</option>`)
                     }
                 }
             }
@@ -84,17 +83,18 @@ $.getJSON('assets/data/map-data.json', function (data) {
  * @param {string} dataset - id of carto dataset containing field
  * @param {field} field - carto field name (column name)
  */
-function setupCutoffControl($slider, dataset, field) {
+function setupRangeControl($slider, dataset, field) {
     let table = cartoData['datasets'][dataset]['cartoTable'];
     let account = cartoData['datasets'][dataset]['cartoAccount'];
     getCartoMinMax(field, table, account)
         .then(function (data) {
-            $slider.attr({
-                "min": data.min,
-                "max": data.max,
-                "style": "width: 100%"
-            });
-            $slider.val(Math.floor((data.min+data.max)/2))
+            $slider = new Foundation.Slider($slider,
+                {
+                    end: data.max,
+                    start: data.min,
+                    initialStart: Math.floor((data.min + data.max) / 4),
+                    initialEnd: Math.floor((data.min + data.max) * 3 / 4)
+                })
         });
 }
 
@@ -112,9 +112,9 @@ function getCartoMinMax(field, table, account) {
 
     return new Promise((resolve, reject) => {
 
-        if(typeof(field) === 'undefined')
+        if (typeof(field) === 'undefined')
             reject("no field provided");
-        if(typeof(table) === 'undefined')
+        if (typeof(table) === 'undefined')
             reject('no table provided');
 
         getCartoQuery(sql, account)
@@ -152,3 +152,14 @@ function getCartoQuery(sql, account) {
             })
     });
 }
+
+
+$('.slider').on('moved.zf.slider', function(){
+    $('.rangeInput').each(function(){
+        $(this).parent().find('.rangeDisplay').text($(this).val());
+    })
+});
+
+$('.style-data-select').on('change', function(){
+    setupRangeControl($('#rangeSlider'), $('.style-dataset-select').val(), $('.style-field-select').val())
+});
