@@ -22,10 +22,10 @@
 
     <div class="row collapse">
         <div class="medium-3 columns">
-            <ul class="vertical tabs" data-tabs id="example-tabs">
-                <li class="tabs-title "><a href="#choroplethPanel" aria-selected="true">Choropleth</a></li>
-                <li class="tabs-title"><a href="#categoryPanel">Category</a></li>
-                <li class="tabs-title is-active"><a href="#rangePanel">Range</a></li>
+            <ul class="vertical tabs " data-tabs id="style-tabs">
+                <li class="tabs-title" data-style-type="choropleth"><a href="#choroplethPanel" aria-selected="true">Choropleth</a></li>
+                <li class="tabs-title" data-style-type="category"><a href="#categoryPanel">Category</a></li>
+                <li class="tabs-title is-active" data-style-type="range"><a href="#rangePanel">Range</a></li>
             </ul>
         </div>
         <div class="medium-9 columns">
@@ -59,6 +59,11 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="medium-3 medium-centered columns">
+            <button type="button" class="expanded success button hollow" id="style-button">Style It!</button>
         </div>
     </div>
 

@@ -23,7 +23,7 @@ class Layer {
         this.name = name;
         this.title = title;
         this.geomType = type;
-        this.account= cartodbAccount
+        this.account= cartodbAccount;
         this.cartodbID = cartodbID;
         this.map = map;
         this.options = options;

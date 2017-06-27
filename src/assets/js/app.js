@@ -3,7 +3,8 @@ $(document).foundation();
 
 let currentPin = '0028F00194000000';
 const defaultParcel = {pin: currentPin};
-
+const cartoAccount = "wprdc-editor";
+let cartoData = {};
 
 $(window).resize(function () {
     $('#footer').height("2.5rem");
@@ -46,7 +47,7 @@ $('#rangeSlider').on('moved.zf.slider', function () {
 });
 
 
-let cartoData = {};
+
 /**
  * Populate Map Style Controller with options
  */
@@ -74,12 +75,14 @@ $.getJSON('assets/data/map-data.json', function (data) {
             }
         }
     }
+    setupRangeControl($('#rangeSlider'), $('.style-dataset-select').val(), $('.style-field-select').val())
+
 });
 
 /**
  * Configure Cut-Off controller based on field of interest
  *
- * @param {$} $slider - selector of slider to be modified
+ * @param {jQuery} $slider - selector of slider to be modified
  * @param {string} dataset - id of carto dataset containing field
  * @param {field} field - carto field name (column name)
  */
@@ -154,12 +157,42 @@ function getCartoQuery(sql, account) {
 }
 
 
-$('.slider').on('moved.zf.slider', function(){
-    $('.rangeInput').each(function(){
+$('.slider').on('moved.zf.slider', function () {
+    $('.rangeInput').each(function () {
         $(this).parent().find('.rangeDisplay').text($(this).val());
     })
 });
 
-$('.style-data-select').on('change', function(){
+$('.style-data-select').on('change', function () {
     setupRangeControl($('#rangeSlider'), $('.style-dataset-select').val(), $('.style-field-select').val())
 });
+
+$('#style-button').on('click', function () {
+    let styleType = $('#style-tabs').find('.is-active').data('style-type');
+    let dataSet =  cartoData['datasets'][$('.style-dataset-select').val()];
+    let field = $('.style-field-select').val();
+    switch (styleType) {
+        case "range":
+            let min = $('#rangeStart').val()
+            let max = $('#rangeEnd').val()
+
+            let options = {css: `${dataSet.parcelID}[ ${field} <= ${max}] { polygon-opacity: 1;} ${dataSet.parcelID}[ ${field} < ${min}] { polygon-opacity: 0;} ${dataSet.parcelID}[ ${field} > ${max}] { polygon-opacity: 0;} `};
+            console.log(options);
+            let styleLayer = new Layer(map, 'style_parcel', "", "MultiPolygon", cartoAccount, dataSet.mapId, cartoMaps[layerName].defaultOptions);
+            layers.add(styleLayer);
+            break;
+        case "category":
+
+            break;
+
+        case "choropleth":
+
+            break;
+    }
+
+});
+
+
+function cartoStyleRange(min, max, color){
+
+}
