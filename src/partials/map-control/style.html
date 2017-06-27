@@ -1,0 +1,65 @@
+<div class="style-maker">
+    <div class="title">
+        <h3 class="text-center">Map Styling</h3>
+    </div>
+    <form>
+        <div class="row">
+            <div class="medium-6 columns">
+                <label>
+                    Dataset
+                    <select class="style-dataset-select style-data-select"></select>
+                </label>
+            </div>
+            <div class="medium-6 columns">
+                <label>
+                    Field
+                    <select class="style-field-select style-data-select"></select>
+                </label>
+            </div>
+        </div>
+    </form>
+
+
+    <div class="row collapse">
+        <div class="medium-3 columns">
+            <ul class="vertical tabs" data-tabs id="example-tabs">
+                <li class="tabs-title "><a href="#choroplethPanel" aria-selected="true">Choropleth</a></li>
+                <li class="tabs-title"><a href="#categoryPanel">Category</a></li>
+                <li class="tabs-title is-active"><a href="#rangePanel">Range</a></li>
+            </ul>
+        </div>
+        <div class="medium-9 columns">
+            <div class="tabs-content" data-tabs-content="example-tabs">
+                <div class="tabs-panel is-active" id="choroplethPanel">
+                    <p>Choropleth</p>
+                </div>
+                <div class="tabs-panel" id="categoryPanel">
+                    <p>Category</p>
+                </div>
+                <div class="tabs-panel" id="rangePanel">
+                    <p>Range</p>
+                    <div class="row">
+                        <div class="medium-2 columns">
+                            <input type="hidden" id="rangeStart" class="rangeInput">
+                            <p class="rangeDisplay"></p>
+                        </div>
+                        <div class="medium-8 columns">
+                            <div id="rangeSlider" class="slider" data-slider data-initial-start="50" data-end="200">
+                                <span class="slider-handle" data-slider-handle role="slider" tabindex="1"
+                                      aria-controls="rangeStart"></span>
+                                <span class="slider-fill" data-slider-fill></span>
+                                <span class="slider-handle" data-slider-handle role="slider" tabindex="1"
+                                      aria-controls="rangeEnd"></span>
+                            </div>
+                        </div>
+                        <div class="medium-2 columns">
+                            <input type="hidden" id="rangeEnd" class="rangeInput">
+                            <p class="rangeDisplay"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
