@@ -47,7 +47,6 @@ $('#rangeSlider').on('moved.zf.slider', function () {
 });
 
 
-
 /**
  * Populate Map Style Controller with options
  */
@@ -169,16 +168,19 @@ $('.style-data-select').on('change', function () {
 
 $('#style-button').on('click', function () {
     let styleType = $('#style-tabs').find('.is-active').data('style-type');
-    let dataSet =  cartoData['datasets'][$('.style-dataset-select').val()];
+    let dataSet = cartoData['datasets'][$('.style-dataset-select').val()];
     let field = $('.style-field-select').val();
     switch (styleType) {
         case "range":
-            let min = $('#rangeStart').val()
-            let max = $('#rangeEnd').val()
+            let min = $('#rangeStart').val();
+            let max = $('#rangeEnd').val();
 
-            let options = {css: `${dataSet.parcelID}[ ${field} <= ${max}] { polygon-opacity: 1;} ${dataSet.parcelID}[ ${field} < ${min}] { polygon-opacity: 0;} ${dataSet.parcelID}[ ${field} > ${max}] { polygon-opacity: 0;} `};
+            let options = {
+                legends: true,
+                css: `${dataSet.parcelID}{  polygon-fill: #B81609;  polygon-opacity: 0.0;  line-color: #FFF;  line-width: 0;  line-opacity: 1;} ${dataSet.parcelID}[ ${field} <= ${max}] { polygon-opacity: 1;} ${dataSet.parcelID}[ ${field} < ${min}] { polygon-opacity: 0;} ${dataSet.parcelID}[ ${field} > ${max}] { polygon-opacity: 0;}`
+            };
             console.log(options);
-            let styleLayer = new Layer(map, 'style_parcel', "", "MultiPolygon", cartoAccount, dataSet.mapId, cartoMaps[layerName].defaultOptions);
+            let styleLayer = new Layer(map, 'style_parcel', "", "MultiPolygon", cartoAccount, dataSet.mapId, options);
             layers.add(styleLayer);
             break;
         case "category":
@@ -192,7 +194,18 @@ $('#style-button').on('click', function () {
 
 });
 
-
-function cartoStyleRange(min, max, color){
-
+function addCustomLegend(title, data) {
+    let $legends = $(".legends");
+    let customLegend = new cdb.geo.ui.Legend.Custom({
+        title: "Custom Legend",
+        data: [
+            {name: "Natural Parks", value: "#58A062"},
+            {name: "Villages", value: "#F07971"},
+            {name: "Rivers", value: "#54BFDE"},
+            {name: "Fields", value: "#9BC562"},
+            {name: "Caves", value: "#FABB5C"}
+        ]
+    });
+    $legends.clear();
+    $legends.append(customLegend.render().$el);
 }

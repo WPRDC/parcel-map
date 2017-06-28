@@ -37,8 +37,8 @@ class Layer {
     addTo(map) {
         let self = this;
         let mapUrl = `https://wprdc-maps.carto.com/u/${this.account}/api/v2/viz/${this.cartodbID}/viz.json`;
-
-        cartodb.createLayer(map, mapUrl, {legends: true})
+        let createOptions = {};
+        cartodb.createLayer(map, mapUrl, {'legends': false})
             .addTo(map)
             .on('done', function (layer) {
                 self.layer = layer;
@@ -80,9 +80,6 @@ class Layer {
             }
             if (options.hasOwnProperty('featureOver')) {
                 layer.on('featureOver', options.featureOver);
-            }
-            if (options.hasOwnProperty('legends')){
-                shape.set({'legends': true})
             }
         }
     }
