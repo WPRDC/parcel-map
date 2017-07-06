@@ -55,22 +55,23 @@ $.getJSON('assets/data/map-data.json', function (data) {
     let $datasetSelects = $('.style-dataset-select');
     let $fieldSelects = $('.style-field-select');
     let datasets = data['datasets'];
-
+    let first = true;
     for (let i in datasets) {
         if (datasets.hasOwnProperty(i)) {
             let dataset = datasets[i];
             $datasetSelects.append(`<option value="${i}">${dataset['title']}</option>`)
 
 
-            if (dataset.hasOwnProperty('fields')) {
+            if (first && dataset.hasOwnProperty('fields')) {
                 let fields = dataset['fields'];
 
                 for (let j in fields) {
                     if (fields.hasOwnProperty(j)) {
-                        let field = fields[j]
+                        let field = fields[j];
                         $fieldSelects.append(`<option value="${field['id']}"  data-type="${field['type']}" data-info="${field['info']}" >${field['name']}</option>`)
                     }
                 }
+                first = false;
             }
         }
     }
@@ -162,9 +163,11 @@ $('.slider').on('moved.zf.slider', function () {
     })
 });
 
+
 $('.style-data-select').on('change', function () {
-    setupRangeControl($('#rangeSlider'), $('.style-dataset-select').val(), $('.style-field-select').val())
+
 });
+
 
 $('#style-button').on('click', function () {
     let styleType = $('#style-tabs').find('.is-active').data('style-type');
@@ -174,14 +177,16 @@ $('#style-button').on('click', function () {
         case "range":
             let min = $('#rangeStart').val();
             let max = $('#rangeEnd').val();
+            let color = $('select[name="colorpicker"]').val();
 
             let options = {
                 legends: true,
-                css: `${dataSet.parcelID}{  polygon-fill: #B81609;  polygon-opacity: 0.0;  line-color: #FFF;  line-width: 0;  line-opacity: 1;} ${dataSet.parcelID}[ ${field} <= ${max}] { polygon-opacity: 1;} ${dataSet.parcelID}[ ${field} < ${min}] { polygon-opacity: 0;} ${dataSet.parcelID}[ ${field} > ${max}] { polygon-opacity: 0;}`
+                css: `${dataSet.parcelID}{  polygon-fill: ${color};  polygon-opacity: 0.0;  line-color: #FFF;  line-width: 0;  line-opacity: 1;} ${dataSet.parcelID}[ ${field} <= ${max}] { polygon-opacity: 1;} ${dataSet.parcelID}[ ${field} < ${min}] { polygon-opacity: 0;} ${dataSet.parcelID}[ ${field} > ${max}] { polygon-opacity: 0;}`
             };
             console.log(options);
             let styleLayer = new Layer(map, 'style_parcel', "", "MultiPolygon", cartoAccount, dataSet.mapId, options);
             layers.add(styleLayer);
+            addCustomLegend(`${dataSet.title}: ${field}`, [{name: `${min} - ${max}`, value: color}]);
             break;
         case "category":
 
@@ -191,21 +196,22 @@ $('#style-button').on('click', function () {
 
             break;
     }
+    $('#styleModal').foundation('close');
+
 
 });
 
 function addCustomLegend(title, data) {
     let $legends = $(".legends");
     let customLegend = new cdb.geo.ui.Legend.Custom({
-        title: "Custom Legend",
-        data: [
-            {name: "Natural Parks", value: "#58A062"},
-            {name: "Villages", value: "#F07971"},
-            {name: "Rivers", value: "#54BFDE"},
-            {name: "Fields", value: "#9BC562"},
-            {name: "Caves", value: "#FABB5C"}
-        ]
+        title: title,
+        data: data
     });
-    $legends.clear();
+    $legends.empty();
     $legends.append(customLegend.render().$el);
 }
+
+$(document).ready(function(){
+    console.log('color picker');
+    $('select[name="colorpicker"]').simplecolorpicker({picker: true});
+});

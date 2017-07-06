@@ -60,6 +60,7 @@ PATHS:
     - "bower_components/foundation-sites/js/foundation.toggler.js"
     - "bower_components/foundation-sites/js/foundation.tooltip.js"
     - "bower_components/foundation-sites/js/foundation.zf.responsiveAccordionTabs.js"
+    - "bower_components/jquery-simplecolorpicker/jquery.simplecolorpicker.js"
     #- "src/assets/js/vendor/*.js"
     # Paths to your own project code are here
     - "src/assets/js/!(app).js"

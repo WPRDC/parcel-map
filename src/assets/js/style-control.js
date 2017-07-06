@@ -3,49 +3,28 @@
  */
 
 // When selecting a dataset to style the map with
-$('.style-dataset').on('change', function () {
-    let dataset = $(this).val();
-    let $fieldSelect = $(this).parent().find('.style-field');
+$('.style-dataset-select').on('change', function () {
+    let datasetName = $(this).val();
+    let $fieldSelect = $('.style-field-select');
 
     // populate the field selection dropdown
-    $.getJSON('assets/data/styles/' + dataset + '.json', function (data) {
-        for (let field in data.fields) {
-            $fieldSelect.append(`<option value="${field}">${field}</option>`)
+    $.getJSON('assets/data/map-data.json', function (data) {
+        let dataset = data.datasets[datasetName];
+        let fields = dataset['fields'];
+        $fieldSelect.empty();
+        for (let j in fields) {
+            if (fields.hasOwnProperty(j)) {
+                let field = fields[j];
+                $fieldSelect.append(`<option value="${field['id']}"  data-type="${field['type']}" data-info="${field['info']}" >${field['name']}</option>`)
+            }
         }
-        $fieldSelect.show();
-        udateStyelControl($(this).parent());
+        setupRangeControl($('#rangeSlider'), $('.style-dataset-select').val(), $('.style-field-select').val());
     })
 });
 
 
-$('.style-field').on('change', function () {
-    udateStyelControl($(this).parent());
+$('.style-field-select').on('change', function () {
+    setupRangeControl($('#rangeSlider'), $('.style-dataset-select').val(), $('.style-field-select').val())
 });
 
-function updateStyleControl($section) {
-    field = $section.find('.style-field').val();
 
-}
-
-
-class StyleModule {
-    constructor() {
-        this.methods = []
-    }
-
-
-    renderMethodForm(){
-        let methodOptions;
-        for (let method in this.methods){
-            methodOptions += `<option value="${method}">${method}></option>`
-        }
-        return `<select class="style-method">${methodOptions}</select>`
-    }
-}
-
-class IntegerModule extends StyleModule {
-    constructor() {
-        super();
-        this.methods += ['choropleth', 'category']
-    }
-}

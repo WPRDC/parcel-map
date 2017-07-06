@@ -29,7 +29,7 @@
             </ul>
         </div>
         <div class="medium-9 columns">
-            <div class="tabs-content" data-tabs-content="example-tabs">
+            <div class="tabs-content" data-tabs-content="style-tabs">
                 <div class="tabs-panel is-active" id="choroplethPanel">
                     <p>Choropleth</p>
                 </div>
@@ -37,26 +37,7 @@
                     <p>Category</p>
                 </div>
                 <div class="tabs-panel" id="rangePanel">
-                    <p>Range</p>
-                    <div class="row">
-                        <div class="medium-2 columns">
-                            <input type="hidden" id="rangeStart" class="rangeInput">
-                            <p class="rangeDisplay"></p>
-                        </div>
-                        <div class="medium-8 columns">
-                            <div id="rangeSlider" class="slider" data-slider data-initial-start="50" data-end="200">
-                                <span class="slider-handle" data-slider-handle role="slider" tabindex="1"
-                                      aria-controls="rangeStart"></span>
-                                <span class="slider-fill" data-slider-fill></span>
-                                <span class="slider-handle" data-slider-handle role="slider" tabindex="1"
-                                      aria-controls="rangeEnd"></span>
-                            </div>
-                        </div>
-                        <div class="medium-2 columns">
-                            <input type="hidden" id="rangeEnd" class="rangeInput">
-                            <p class="rangeDisplay"></p>
-                        </div>
-                    </div>
+                    {{>range}}
                 </div>
             </div>
         </div>

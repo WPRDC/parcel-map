@@ -10,6 +10,17 @@
         {"id": "total_amount", "name": "Total Amount of Liens ($)", "info": "some info and stuff", "type": "numeric"},
         {"id": "number", "name": "Number of Liens", "info": "some info and stuff2", "type": "numeric"}
       ]
+    },
+    "assessment": {
+      "title": "Assessment",
+      "cartoAccount": "wprdc-editor",
+      "cartoTable": "wprdc.alleghenycountymasterfile03012017",
+      "mapId": "4156fe54-fddc-43e6-993a-6ad37626e9e0",
+      "parcelID": "#alleghenycountymasterfile03012017",
+      "fields": [
+        {"id": "saledate", "name": "Sale Date", "info": "some info and stuff", "type": "date"},
+        {"id": "yearblt", "name": "Year Built", "info": "some info and stuff2", "type": "numeric"}
+      ]
     }
   }
 }
