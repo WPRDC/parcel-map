@@ -157,13 +157,6 @@ function getCartoQuery(sql, account) {
 }
 
 
-$('.slider').on('moved.zf.slider', function () {
-    $('.rangeInput').each(function () {
-        $(this).parent().find('.rangeDisplay').text($(this).val());
-    })
-});
-
-
 $('.style-data-select').on('change', function () {
 
 });

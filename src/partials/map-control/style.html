@@ -23,22 +23,23 @@
     <div class="row collapse">
         <div class="medium-3 columns">
             <ul class="vertical tabs " data-tabs id="style-tabs">
-                <li class="tabs-title" data-style-type="choropleth"><a href="#choroplethPanel" aria-selected="true">Choropleth</a></li>
+                <li class="tabs-title is-active" data-style-type="choropleth"><a href="#choroplethPanel">Choropleth</a></li>
                 <li class="tabs-title" data-style-type="category"><a href="#categoryPanel">Category</a></li>
-                <li class="tabs-title is-active" data-style-type="range"><a href="#rangePanel">Range</a></li>
+                <li class="tabs-title" data-style-type="range"><a href="#rangePanel">Range</a></li>
             </ul>
         </div>
         <div class="medium-9 columns">
             <div class="tabs-content" data-tabs-content="style-tabs">
-                <div class="tabs-panel is-active" id="choroplethPanel">
-                    <p>Choropleth</p>
-                </div>
-                <div class="tabs-panel" id="categoryPanel">
-                    <p>Category</p>
-                </div>
                 <div class="tabs-panel" id="rangePanel">
                     {{>range}}
                 </div>
+                <div class="tabs-panel" id="categoryPanel">
+                    {{>category}}
+                </div>
+                <div class="tabs-panel" id="choroplethPanel">
+                    {{>choropleth}}
+                </div>
+
             </div>
         </div>
     </div>

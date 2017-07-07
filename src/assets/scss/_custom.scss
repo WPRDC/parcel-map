@@ -7,7 +7,6 @@ body {
   margin: 0;
 }
 
-
 // FOUC Fix
 .no-js {
   @include breakpoint(small only) {
@@ -50,7 +49,6 @@ body {
     flex-shrink: 1;
   }
 
-
   #map {
     border: 1px solid $black;
     display: inline-block;
@@ -66,7 +64,6 @@ body {
   }
 }
 
-
 .inner-flex-container {
   height: 100vh;
   display: flex;
@@ -75,7 +72,6 @@ body {
   align-content: stretch;
   align-items: stretch;
   margin: 0;
-
 
 }
 
@@ -94,7 +90,6 @@ body {
 //  min-height: 0;
 //}
 
-
 .expanded.row {
   margin: 0 0 0 0;
 }
@@ -102,6 +97,7 @@ body {
 .expanded.column {
   padding: 0;
 }
+
 #main-content {
   display: flex;
   align-items: stretch;
@@ -146,18 +142,18 @@ body {
   margin: 2px;
 }
 
-
 .material-icons.green {
   color: $success-color;
 }
 
-.material-icons.red{
+.material-icons.red {
   color: $alert-color;
 }
 
 .bar rect {
   fill: $black;
 }
+
 .bar rect.hi {
   fill: $success-color;
 }
@@ -169,21 +165,20 @@ body {
 .slim {
   margin: .2rem
 }
-.dropdown-pane{
+
+.dropdown-pane {
   .tabs {
     .tabs-title {
       border-style: solid;
       border-width: 0 0 0 1px;
       border-color: $light-gray;
-      &:first-of-type{
+      &:first-of-type {
         border-width: 0 1px 0 0;
       }
     }
 
   }
 }
-
-
 
 .alert-minor {
   font-style: italic;
@@ -199,18 +194,15 @@ body {
   }
 }
 
-
 .table-index {
   font-weight: 700;
 }
-
 
 #sv-image {
   border: $black solid 1px;
   display: block;
   margin: auto;
 }
-
 
 path.line {
   stroke: $black;
@@ -229,13 +221,10 @@ path.line {
   }
 }
 
-
-
 .search-result-list {
   max-height: 25vh;
   overflow: auto;
 }
-
 
 .prediction {
   list-style-type: none;
@@ -257,6 +246,7 @@ path.line {
   z-index: 1000;
 
 }
+
 .search-result {
   border: 1px solid $black;
   p {
@@ -271,7 +261,7 @@ path.line {
   cursor: hand;
 }
 
-.search-addr{
+.search-addr {
   font-size: 60%;
   text-align: center;
 }
@@ -293,7 +283,6 @@ path.line {
   cursor: hand;
 }
 
-
 #slide-button {
   position: absolute;
   top: 45%;
@@ -312,12 +301,12 @@ path.line {
   border-bottom: 1px solid $black;
 }
 
-#map-settings-header{
+#map-settings-header {
   padding: 5px;
   font-family: $address-font;
 }
 
-.style-button{
+.style-button {
   border-radius: 10px;
 
 }
@@ -326,12 +315,24 @@ path.line {
   overflow-x: auto;
 }
 
-#map .cartodb-legend-stack { position: absolute; left: 60px;  width: 250px;}
+.cartodb-legend {
+  position: absolute;
+  left: 10px;
+  width: 160px;
+}
 
-
-.rangeDisplay{
-  font-size: rem-calc(12pt);
+.rangeDisplay {
+  font-size: rem-calc(14pt);
   vertical-align: middle;
   margin: auto 0 auto 0;
 }
 
+#rangeSlider{
+  margin-bottom: .7rem;
+}
+
+.simplecolorpicker.icon{
+  height: 2rem;
+  width: 3rem;
+  vertical-align: middle;
+}

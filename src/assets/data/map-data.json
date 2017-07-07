@@ -7,7 +7,7 @@
       "mapId": "2ac98314-c5b9-4730-ae79-71c80dbd8790",
       "parcelID": "#allegheny_county_tax_liens",
       "fields": [
-        {"id": "total_amount", "name": "Total Amount of Liens ($)", "info": "some info and stuff", "type": "numeric"},
+        {"id": "total_amount", "name": "Total Amount of Liens ($)", "info": "some info and stuff", "type": "money"},
         {"id": "number", "name": "Number of Liens", "info": "some info and stuff2", "type": "numeric"}
       ]
     },
