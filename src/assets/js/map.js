@@ -8,6 +8,37 @@
  * ============================================================================
  */
 
+const choropleths = {
+    "orange": {
+        "3": ["#fee8c8", "#fdbb84", "#e34a33"],
+        "4": ["#fef0d9", "#fdcc8a", "#fc8d59", "#d7301f"],
+        "5": ["#fef0d9", "#fdcc8a", "#fc8d59", "#e34a33", "#b30000"],
+        "6": ["#fef0d9", "#fdd49e", "#fdbb84", "#fc8d59", "#e34a33", "#b30000"],
+        "7": ["#fef0d9", "#fdd49e", "#fdbb84", "#fc8d59", "#ef6548", "#d7301f", "#990000"]
+    },
+    "blue": {
+        "3": ["#deebf7", "#9ecae1", "#3182bd"],
+        "4": ["#eff3ff", "#bdd7e7", "#6baed6", "#2171b5"],
+        "5": ["#eff3ff", "#bdd7e7", "#6baed6", "#3182bd", "#08519c"],
+        "6": ["#eff3ff", "#c6dbef", "#9ecae1", "#6baed6", "#3182bd", "#08519c"],
+        "7": ["#eff3ff", "#c6dbef", "#9ecae1", "#6baed6", "#4292c6", "#2171b5", "#084594"]
+    },
+    "black": {
+        "3": ["#f0f0f0", "#bdbdbd", "#636363"],
+        "4": ["#f7f7f7", "#cccccc", "#969696", "#525252"],
+        "5": ["#f7f7f7", "#cccccc", "#969696", "#636363", "#252525"],
+        "6": ["#f7f7f7", "#d9d9d9", "#bdbdbd", "#969696", "#636363", "#252525"],
+        "7": ["#f7f7f7", "#d9d9d9", "#bdbdbd", "#969696", "#737373", "#525252", "#252525"]
+    },
+    "yellow-blue": {
+        "3": ["#edf8b1", "#7fcdbb", "#2c7fb8"],
+        "4": ["#ffffcc", "#a1dab4", "#41b6c4", "#225ea8"],
+        "5": ["#ffffcc", "#a1dab4", "#41b6c4", "#2c7fb8", "#253494"],
+        "6": ["#ffffcc", "#c7e9b4", "#7fcdbb", "#41b6c4", "#2c7fb8", "#253494"],
+        "7": ["#ffffcc", "#c7e9b4", "#7fcdbb", "#41b6c4", "#1d91c0", "#225ea8", "#0c2c84"]
+    }
+}
+
 class Layer {
     /**
      * Map Layer
@@ -23,7 +54,7 @@ class Layer {
         this.name = name;
         this.title = title;
         this.geomType = type;
-        this.account= cartodbAccount;
+        this.account = cartodbAccount;
         this.cartodbID = cartodbID;
         this.map = map;
         this.options = options;

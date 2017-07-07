@@ -186,6 +186,15 @@ $('#style-button').on('click', function () {
             break;
 
         case "choropleth":
+            let bins = $('#bins').val();
+            let quant = $('#quantification').val();
+            let clr = $('#choropleth-color').val();
+            let colors = choropleths[clr][bins];
+            console.log(colors);
+            let options = {
+                legends: true,
+                css: `${dataSet.parcelID}{  polygon-fill: ${color};  polygon-opacity: 0.0;  line-color: #FFF;  line-width: 0;  line-opacity: 1;} ${dataSet.parcelID}[ ${field} <= ${max}] { polygon-opacity: 1;} ${dataSet.parcelID}[ ${field} < ${min}] { polygon-opacity: 0;} ${dataSet.parcelID}[ ${field} > ${max}] { polygon-opacity: 0;}`
+            };
 
             break;
     }
@@ -208,3 +217,5 @@ $(document).ready(function(){
     console.log('color picker');
     $('select[name="colorpicker"]').simplecolorpicker({picker: true});
 });
+
+
