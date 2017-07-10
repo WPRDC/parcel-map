@@ -89,16 +89,35 @@ $.getJSON('assets/data/map-data.json', function (data) {
 function setupRangeControl($slider, dataset, field) {
     let table = cartoData['datasets'][dataset]['cartoTable'];
     let account = cartoData['datasets'][dataset]['cartoAccount'];
-    getCartoMinMax(field, table, account)
-        .then(function (data) {
-            $slider = new Foundation.Slider($slider,
-                {
-                    end: data.max,
-                    start: data.min,
-                    initialStart: Math.floor((data.min + data.max) / 4),
-                    initialEnd: Math.floor((data.min + data.max) * 3 / 4)
-                })
-        });
+    let range = [];
+    for (let i in cartoData['datasets'][dataset]['fields']){
+        let fld = cartoData['datasets'][dataset]['fields'][i];
+        if (fld.id === field){
+            range = fld.range;
+
+        }
+    }
+    if (!range.length){
+        getCartoMinMax(field, table, account)
+            .then(function (data) {
+                $slider = new Foundation.Slider($slider,
+                    {
+                        end: data.max,
+                        start: data.min,
+                        initialStart: Math.floor((data.min + data.max) / 4),
+                        initialEnd: Math.floor((data.min + data.max) * 3 / 4)
+                    })
+            });
+    }
+    else {
+        $slider = new Foundation.Slider($slider,
+            {
+                end: range[1],
+                start: range[0],
+                initialStart: Math.floor((range[0] + range[1]) / 4),
+                initialEnd: Math.floor((range[0] + range[1]) * 3 / 4)
+            })
+    }
 }
 
 
@@ -157,27 +176,24 @@ function getCartoQuery(sql, account) {
 }
 
 
-$('.style-data-select').on('change', function () {
-
-});
-
-
 $('#style-button').on('click', function () {
     let styleType = $('#style-tabs').find('.is-active').data('style-type');
     let dataSet = cartoData['datasets'][$('.style-dataset-select').val()];
     let field = $('.style-field-select').val();
+    let options = {};
+    let styleLayer= {};
     switch (styleType) {
         case "range":
             let min = $('#rangeStart').val();
             let max = $('#rangeEnd').val();
             let color = $('select[name="colorpicker"]').val();
 
-            let options = {
+            options = {
                 legends: true,
                 css: `${dataSet.parcelID}{  polygon-fill: ${color};  polygon-opacity: 0.0;  line-color: #FFF;  line-width: 0;  line-opacity: 1;} ${dataSet.parcelID}[ ${field} <= ${max}] { polygon-opacity: 1;} ${dataSet.parcelID}[ ${field} < ${min}] { polygon-opacity: 0;} ${dataSet.parcelID}[ ${field} > ${max}] { polygon-opacity: 0;}`
             };
             console.log(options);
-            let styleLayer = new Layer(map, 'style_parcel', "", "MultiPolygon", cartoAccount, dataSet.mapId, options);
+            styleLayer = new Layer(map, 'style_parcel', "", "MultiPolygon", cartoAccount, dataSet.mapId, options);
             layers.add(styleLayer);
             addCustomLegend(`${dataSet.title}: ${field}`, [{name: `${min} - ${max}`, value: color}]);
             break;
@@ -191,17 +207,38 @@ $('#style-button').on('click', function () {
             let clr = $('#choropleth-color').val();
             let colors = choropleths[clr][bins];
             console.log(colors);
-            let options = {
+            options = {
                 legends: true,
-                css: `${dataSet.parcelID}{  polygon-fill: ${color};  polygon-opacity: 0.0;  line-color: #FFF;  line-width: 0;  line-opacity: 1;} ${dataSet.parcelID}[ ${field} <= ${max}] { polygon-opacity: 1;} ${dataSet.parcelID}[ ${field} < ${min}] { polygon-opacity: 0;} ${dataSet.parcelID}[ ${field} > ${max}] { polygon-opacity: 0;}`
+                css: `${dataSet.parcelID}{
+                polygon-opacity: 1.0;  line-color: #FFF;  line-width: 0;  line-opacity: 1;
+                polygon-fill: ramp([${field}], ${colorsToString(colors)}, ${quant}(${bins}))
+                }`
             };
+            console.log(options);
+            styleLayer = new Layer(map, 'style_parcel', "", "MultiPolygon", cartoAccount, dataSet.mapId, options);
+            layers.add(styleLayer);
+
+            getCartoMinMax(field, dataSet.cartoTable, dataSet.cartoAccount)
+                .then(function(data){
+                    addChoroplethLegend(`${dataSet.title}: ${field}`, data.min, data.max, colors);
+                });
 
             break;
     }
     $('#styleModal').foundation('close');
-
-
 });
+
+
+function addChoroplethLegend(title, left, right, colors) {
+    let $legends = $(".legends");
+    let legend = new cdb.geo.ui.Legend.Choropleth({
+        title: title,
+        left: String(left), right: String(right), colors: colors
+    });
+    $legends.empty();
+    $legends.append(legend.render().$el);
+    $legends.find('.cartodb-legend').css('width', '320px');
+}
 
 function addCustomLegend(title, data) {
     let $legends = $(".legends");
@@ -211,6 +248,7 @@ function addCustomLegend(title, data) {
     });
     $legends.empty();
     $legends.append(customLegend.render().$el);
+    $legends.find('.cartodb-legend').css('width', '160px')
 }
 
 $(document).ready(function(){
@@ -219,3 +257,14 @@ $(document).ready(function(){
 });
 
 
+function colorsToString(colors){
+    let result = '(';
+    for(let i =0; i< colors.length; i++){
+        result += colors[i];
+        if(i < colors.length -1){
+            result += ','
+        }
+    }
+    result += ')';
+    return result;
+}

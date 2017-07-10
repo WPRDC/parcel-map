@@ -11,13 +11,15 @@
           "id": "total_amount",
           "name": "Total Amount of Liens ($)",
           "info": "some info and stuff",
-          "type": "money"
+          "type": "money",
+          "range": []
         },
         {
           "id": "number",
           "name": "Number of Liens",
           "info": "some info and stuff2",
-          "type": "numeric"
+          "type": "numeric",
+          "range": []
         }
       ]
     },
@@ -32,13 +34,15 @@
           "id": "saledate",
           "name": "Sale Date",
           "info": "some info and stuff",
-          "type": "date"
+          "type": "date",
+          "range": []
         },
         {
           "id": "yearblt",
           "name": "Year Built",
           "info": "some info and stuff2",
-          "type": "numeric"
+          "type": "numeric",
+          "range": [1755, 2017]
         }
       ]
     }
