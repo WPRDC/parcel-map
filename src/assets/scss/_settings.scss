@@ -77,7 +77,7 @@ $global-margin: 1rem;
 $global-padding: 1rem;
 $global-weight-normal: normal;
 $global-weight-bold: bold;
-$global-radius: 0;
+$global-radius: 5px;
 $global-text-direction: ltr;
 $global-flexbox: false;
 $print-transparent-backgrounds: true;
@@ -251,9 +251,9 @@ $breadcrumbs-item-slash: true;
 $button-padding: 0.85em 1em;
 $button-margin: 0 0 $global-margin 0;
 $button-fill: solid;
-$button-background: $primary-color;
-$button-background-hover: scale-color($button-background, $lightness: -15%);
-$button-color: $white;
+$button-background: $white;
+$button-background-hover: $white;
+$button-color: $black;
 $button-color-alt: $black;
 $button-radius: $global-radius;
 $button-sizes: (
@@ -343,7 +343,7 @@ $dropdown-radius: $global-radius;
 $dropdown-sizes: (
   tiny: 100px,
   small: 200px,
-  large: 400px,
+  large: 600px,
 );
 
 // 18. Dropdown Menu
@@ -358,6 +358,7 @@ $dropdownmenu-border: 1px solid $medium-gray;
 
 // 19. Forms
 // ---------
+$form-font-size: rem-calc(12);
 
 $fieldset-border: 1px solid $medium-gray;
 $fieldset-padding: rem-calc(20);
@@ -372,7 +373,7 @@ $input-prefix-background: $light-gray;
 $input-prefix-border: 1px solid $medium-gray;
 $input-prefix-padding: 1rem;
 $form-label-color: $black;
-$form-label-font-size: rem-calc(14);
+$form-label-font-size: rem-calc(12);
 $form-label-font-weight: $global-weight-normal;
 $form-label-line-height: 1.8;
 $select-background: $white;
@@ -381,7 +382,7 @@ $select-radius: $global-radius;
 $input-color: $black;
 $input-placeholder-color: $medium-gray;
 $input-font-family: inherit;
-$input-font-size: rem-calc(16);
+$input-font-size: $form-font-size;
 $input-font-weight: $global-weight-normal;
 $input-background: $white;
 $input-background-focus: $white;
@@ -518,14 +519,14 @@ $reveal-overlay-background: rgba($black, 0.45);
 // 30. Slider
 // ----------
 
-$slider-width-vertical: 0.5rem;
+$slider-width-vertical: 0.3rem;
 $slider-transition: all 0.2s ease-in-out;
-$slider-height: 0.5rem;
+$slider-height: 0.3rem;
 $slider-background: $light-gray;
 $slider-fill-background: $medium-gray;
-$slider-handle-height: 1.4rem;
-$slider-handle-width: 1.4rem;
-$slider-handle-background: $black;
+$slider-handle-height: 1rem;
+$slider-handle-width: 1rem;
+$slider-handle-background: $light-gray;
 $slider-opacity-disabled: 0.25;
 $slider-radius: 100px;
 

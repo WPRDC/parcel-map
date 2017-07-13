@@ -1,23 +1,40 @@
 <div class="flex-container">
     {{>header}}
     <div id="main-content" class="flex-item expanded row">
-        <div class="off-canvas-wrapper small-12 medium-7 large-8 columns" style="margin: 0; padding: 0;">
-            <div class="off-canvas-absolute position-left is-open" id="map-settings" data-off-canvas data-close-on-click="false">
-                {{> map}}
-            </div>
-            <div id="map" class="off-canvas-content" data-off-canvas-content  style="height: 100%; width: 100%; ">
-                <button id="slide-button" type="button" class="small button secondary on" data-toggle="map-settings"><i class="material-icons">chevron_left</i></button>
-                <div class="legends"></div>
-            </div>
+        <div id="map" class="small-12 medium-7 large-8 columns">
+            <div class="legends"></div>
         </div>
-        <div id="data" class="small-12 medium-5 large-4 columns"> {{> info}}</div>
+
+        <div id="data" class="small-12 medium-5 large-4 columns">
+            {{> info}}
+        </div>
     </div>
     <div id="footer" class="flex-item">
         {{>footer}}
     </div>
 
 </div>
-
-<div class="reveal" id="styleModal" data-reveal>
+<div class="map-button-container" id="map-buttons" style="display: none;">
+    <ul>
+        <li>
+            <a class="map-button button toggle-button shadowed" id="layer-menu-button" data-toggle="layer-dropdown"><i class="material-icons">layers</i></a>
+        </li>
+        <li>
+            <a class="map-button button toggle-button shadowed" id="style-menu-button" data-toggle="style-dropdown"><i class="material-icons">format_paint</i></a>
+        </li>
+    </ul>
+</div>
+<div class="dropdown-pane left shadowed" id="layer-dropdown" data-dropdown data-auto-focus>
+    <h5>Change Basemap:</h5>
+    <form>
+        <select id="basemap-select">
+            <option value="openMapSurfer">OpenMap Surfer (default)</option>
+            <option value="openStreetMap">OpenStreetMap</option>
+            <option value="stamenToner">Stamen Toner</option>
+            <option value="positron">Carto Positron</option>
+        </select>
+    </form>
+</div>
+<div class="dropdown-pane large left shadowed" id="style-dropdown" data-dropdown data-auto-focus>
     {{>style}}
 </div>

@@ -71,9 +71,9 @@ function display_search(results) {
     if (!results || !results.length) {
         $display.append("<p class='alert-minor'>No properties with that address found")
     }
-    else if (results.length == 1) {
+    else if (results.length === 1) {
         processParcel(null, null, null, {pin: results[0]['PARID']}, null, true);
-        closeSearch()
+        closeDropdown($('#search-dropdown'))
     }
     else {
         $premsg.append("<p class='alert-minor'>Exact match not found, is it one of these: </p>");
@@ -114,17 +114,16 @@ $("#search-results").on("click", ".search-pin", function () {
 $('#pin-search-button').on('click', function () {
     let searchString = $('#pin-search-box').val();
     mainSearch(searchString);
-    closeSearch()
+    closeDropdown($('#search-dropdown'))
 });
 
 
 // Workaround since some contents of dropdown stick around for a short bit after foundation('close')
-function closeSearch(){
-    let $search = $('#search-dropdown');
-    $search.hide();
-    $search.foundation('close');
+function closeDropdown($dd){
+    $dd.hide();
+    $dd.foundation('close');
     setTimeout(function(){
-        $search.show();
+        $dd.show();
     }, 100);
 }
 

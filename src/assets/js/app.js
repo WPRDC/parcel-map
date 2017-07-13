@@ -1,5 +1,7 @@
 $(document).foundation();
-
+$(document).ready(function () {
+    positionMapButtons();
+})
 
 let currentPin = '0028F00194000000';
 const defaultParcel = {pin: currentPin};
@@ -16,11 +18,43 @@ $(window).onload = processParcel(null, null, null, defaultParcel, null, true);
 // Close the dropdown when we click anything other than the dropdown
 $(document).on('click', function (event) {
     // If we click outside of this element...
-    if (!$(event.target).closest('#search-dropdown').length && !$(event.target).closest('#search-menu-button').length && !$(event.target).closest('#search-tab-content').length && !$(event.target).closest('.ui-autocomplete').length) {
-        // ...then use Foundation to trigger the dropdown close
-        closeSearch();
+
+    if (!areElementsUnderEvent(event, [$('#search-dropdown'), $('#search-menu-button'), $('#search-tab-content'), $('.ui-autocomplete')])) {
+        closeDropdown($('#search-dropdown'));
+    }
+    // if clicked outside of style-dropdown && clicked oustide of style-menu
+    if (!areElementsUnderEvent(event, [$('#style-dropdown'), $('#style-menu-button'),$('.simplecolorpicker')])) {
+        closeDropdown($('#style-dropdown'));
+    }
+    if (!areElementsUnderEvent(event, [$('#layer-dropdown'), $('#layer-menu-button')])) {
+        closeDropdown($('#layer-dropdown'));
     }
 });
+
+$('.toggle-button').on('click', function(){
+    if($(this).hasClass('toggle-on')){
+        $(this).removeClass('toggle-on');
+    } else {
+        $(this).addClass('toggle-on');
+    }
+});
+
+
+/**
+ * Checks any elements in `elems` are under event
+ *
+ * @param {event} event - usualy mouse event like click
+ * @param {array} elems - list of JQuery selectors
+ * @returns {number}
+ */
+function areElementsUnderEvent(event, elems) {
+    let result = 0;
+    for (let i = 0; i < elems.length; i++) {
+        result += $(event.target).closest(elems[i]).length;
+    }
+    return !!+result;
+}
+
 
 let $slideButton = $('#slide-button');
 $slideButton.on('click', function (e) {
@@ -90,14 +124,14 @@ function setupRangeControl($slider, dataset, field) {
     let table = cartoData['datasets'][dataset]['cartoTable'];
     let account = cartoData['datasets'][dataset]['cartoAccount'];
     let range = [];
-    for (let i in cartoData['datasets'][dataset]['fields']){
+    for (let i in cartoData['datasets'][dataset]['fields']) {
         let fld = cartoData['datasets'][dataset]['fields'][i];
-        if (fld.id === field){
+        if (fld.id === field) {
             range = fld.range;
 
         }
     }
-    if (!range.length){
+    if (!range.length) {
         getCartoMinMax(field, table, account)
             .then(function (data) {
                 $slider = new Foundation.Slider($slider,
@@ -181,7 +215,7 @@ $('#style-button').on('click', function () {
     let dataSet = cartoData['datasets'][$('.style-dataset-select').val()];
     let field = $('.style-field-select').val();
     let options = {};
-    let styleLayer= {};
+    let styleLayer = {};
     switch (styleType) {
         case "range":
             let min = $('#rangeStart').val();
@@ -219,13 +253,13 @@ $('#style-button').on('click', function () {
             layers.add(styleLayer);
 
             getCartoMinMax(field, dataSet.cartoTable, dataSet.cartoAccount)
-                .then(function(data){
+                .then(function (data) {
                     addChoroplethLegend(`${dataSet.title}: ${field}`, data.min, data.max, colors);
                 });
 
             break;
     }
-    $('#styleModal').foundation('close');
+    closeDropdown($('#style-dropdown'));
 });
 
 
@@ -251,20 +285,40 @@ function addCustomLegend(title, data) {
     $legends.find('.cartodb-legend').css('width', '160px')
 }
 
-$(document).ready(function(){
+$(document).ready(function () {
     console.log('color picker');
     $('select[name="colorpicker"]').simplecolorpicker({picker: true});
 });
 
 
-function colorsToString(colors){
+function colorsToString(colors) {
     let result = '(';
-    for(let i =0; i< colors.length; i++){
+    for (let i = 0; i < colors.length; i++) {
         result += colors[i];
-        if(i < colors.length -1){
+        if (i < colors.length - 1) {
             result += ','
         }
     }
     result += ')';
     return result;
 }
+
+$('.dropdown-pane').on('click dblclick', function (e) {
+    console.log('w00000t');
+    e.stopPropagation();
+});
+
+
+
+function positionMapButtons() {
+    let $map = $('#map');
+    let $buttons = $('#map-buttons');
+    let t = $map.position().top + 10;
+    let l = $map.position().left + $map.width() - $buttons.width() - 10;
+    $buttons.css({'top': t, 'left': l, 'position': 'absolute'});
+    $buttons.show();
+}
+
+$('.dropdown-pane').on("show.zf.dropdownmenu", function (ev, $el){
+    console.log('-------------' + $el.attr('class'));
+})

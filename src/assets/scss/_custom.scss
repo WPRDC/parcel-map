@@ -75,20 +75,20 @@ body {
 
 }
 
-//.inner-flex-item:nth-child(1) {
-//  height: auto;
-//  flex-grow: 0;
-//  flex-shrink: 1;
-//  //border: 2px solid blue;
-//}
-//
-//.inner-flex-item:nth-child(2) {
-//  display: block; /* 1 */
-//  flex-grow: 1;
-//  flex-shrink: 1;
-//  overflow: auto;
-//  min-height: 0;
-//}
+.inner-flex-item:nth-child(1) {
+  height: auto;
+  flex-grow: 0;
+  flex-shrink: 1;
+  //border: 2px solid blue;
+}
+
+.inner-flex-item:nth-child(2) {
+  display: block; /* 1 */
+  flex-grow: 1;
+  flex-shrink: 1;
+  overflow: auto;
+  min-height: 0;
+}
 
 .expanded.row {
   margin: 0 0 0 0;
@@ -318,20 +318,70 @@ path.line {
 .cartodb-legend {
   position: absolute;
   left: 10px;
+
 }
 
-.rangeDisplay {
-  font-size: rem-calc(14pt);
-  vertical-align: middle;
-  margin: auto 0 auto 0;
-}
-
-#rangeSlider{
+#rangeSlider {
   margin-bottom: .7rem;
 }
 
-.simplecolorpicker.icon{
+.simplecolorpicker.picker {
+  z-index: 10500;
+
+}
+
+.simplecolorpicker.icon {
   height: 2rem;
   width: 3rem;
   vertical-align: middle;
+  border-radius: $global-radius;
+}
+
+select {
+  font-size: rem-calc(12pt);
+}
+
+.map-button-container {
+  position: absolute;
+  z-index: 10000;
+
+  ul {
+    list-style: none;
+  }
+}
+
+.map-button {
+  font-size: rem-calc(8pt);
+  background: $white;
+  border: 1px solid $dark-gray;
+  color: $black;
+
+  &:hover {
+    background: $dark-gray;
+    color: $white;
+  }
+  &:active {
+    background: $white;
+    border: $dark-gray;
+    color: $black;
+  }
+  &:visited {
+    background: $white;
+    border: $dark-gray;
+    color: $black;
+  }
+}
+
+.dropdown-pane {
+  z-index: 10000;
+  background: $white;
+}
+
+.slider-handle {
+  border: .2px solid $dark-gray;
+  background: #fefefe;
+}
+
+.shadowed {
+  box-shadow: 1px 2px 4px #888888;
 }
