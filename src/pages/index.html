@@ -1,3 +1,4 @@
+{{>dropdowns}}
 <div class="flex-container">
     {{>header}}
     <div id="main-content" class="flex-item expanded row">
@@ -7,6 +8,7 @@
 
         <div id="data" class="small-12 medium-5 large-4 columns">
             {{> info}}
+
         </div>
     </div>
     <div id="footer" class="flex-item">
@@ -14,27 +16,6 @@
     </div>
 
 </div>
-<div class="map-button-container" id="map-buttons" style="display: none;">
-    <ul>
-        <li>
-            <a class="map-button button toggle-button shadowed" id="layer-menu-button" data-toggle="layer-dropdown"><i class="material-icons">layers</i></a>
-        </li>
-        <li>
-            <a class="map-button button toggle-button shadowed" id="style-menu-button" data-toggle="style-dropdown"><i class="material-icons">format_paint</i></a>
-        </li>
-    </ul>
-</div>
-<div class="dropdown-pane left shadowed" id="layer-dropdown" data-dropdown data-auto-focus>
-    <h5>Change Basemap:</h5>
-    <form>
-        <select id="basemap-select">
-            <option value="openMapSurfer">OpenMap Surfer (default)</option>
-            <option value="openStreetMap">OpenStreetMap</option>
-            <option value="stamenToner">Stamen Toner</option>
-            <option value="positron">Carto Positron</option>
-        </select>
-    </form>
-</div>
-<div class="dropdown-pane large left shadowed" id="style-dropdown" data-dropdown data-auto-focus>
-    {{>style}}
-</div>
+
+
+

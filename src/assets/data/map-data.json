@@ -1,5 +1,48 @@
 {
   "datasets": {
+    "assessment": {
+      "title": "Assessment",
+      "cartoAccount": "wprdc-editor",
+      "cartoTable": "wprdc.alleghenycountymasterfile03012017",
+      "mapId": "4156fe54-fddc-43e6-993a-6ad37626e9e0",
+      "parcelID": "#alleghenycountymasterfile03012017",
+      "fields": [
+        {
+          "id": "fairmarkettotal",
+          "name": "Total Assessed Value (Fair Market)",
+          "info": "",
+          "type": "money",
+          "range": [],
+          "valueFunction": "pow",
+          "base": ".0001"
+        },
+        {
+          "id": "fairmarketland",
+          "name": "Assessed Land Value (Fair Market)",
+          "info": "",
+          "type": "money",
+          "range": [],
+          "valueFunction": "pow",
+          "base": "0.0001"
+        },
+        {
+          "id": "fairmarketbuilding",
+          "name": "Assessed Building Value (Fair Market)",
+          "info": "",
+          "type": "money",
+          "range": [],
+          "valueFunction": "pow",
+          "base": "0.1"
+        },
+        {
+          "id": "yearblt",
+          "name": "Year Built",
+          "info": "some info and stuff2",
+          "type": "numeric",
+          "range": [1755, 2017]
+        }
+      ]
+    },
     "liens": {
       "title": "Liens",
       "cartoAccount": "wprdc-editor",
@@ -12,7 +55,9 @@
           "name": "Total Amount of Liens ($)",
           "info": "some info and stuff",
           "type": "money",
-          "range": []
+          "range": [],
+          "valueFunction": "log",
+          "base": "20"
         },
         {
           "id": "number",
@@ -20,29 +65,6 @@
           "info": "some info and stuff2",
           "type": "numeric",
           "range": []
-        }
-      ]
-    },
-    "assessment": {
-      "title": "Assessment",
-      "cartoAccount": "wprdc-editor",
-      "cartoTable": "wprdc.alleghenycountymasterfile03012017",
-      "mapId": "4156fe54-fddc-43e6-993a-6ad37626e9e0",
-      "parcelID": "#alleghenycountymasterfile03012017",
-      "fields": [
-        {
-          "id": "saledate",
-          "name": "Sale Date",
-          "info": "some info and stuff",
-          "type": "date",
-          "range": []
-        },
-        {
-          "id": "yearblt",
-          "name": "Year Built",
-          "info": "some info and stuff2",
-          "type": "numeric",
-          "range": [1755, 2017]
         }
       ]
     }

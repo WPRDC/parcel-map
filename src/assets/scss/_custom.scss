@@ -168,15 +168,12 @@ body {
 
 .dropdown-pane {
   .tabs {
+    border-style: solid;
+    border-width: 0 0 0 1px;
+    border-color: $light-gray;
     .tabs-title {
-      border-style: solid;
-      border-width: 0 0 0 1px;
-      border-color: $light-gray;
-      &:first-of-type {
-        border-width: 0 1px 0 0;
-      }
-    }
 
+    }
   }
 }
 
@@ -357,19 +354,10 @@ select {
   color: $black;
 
   &:hover {
-    background: $dark-gray;
-    color: $white;
-  }
-  &:active {
-    background: $white;
-    border: $dark-gray;
+    background: darken($white, 7%);
     color: $black;
   }
-  &:visited {
-    background: $white;
-    border: $dark-gray;
-    color: $black;
-  }
+
 }
 
 .dropdown-pane {
@@ -380,8 +368,12 @@ select {
 .slider-handle {
   border: .2px solid $dark-gray;
   background: #fefefe;
+  &.is-dragging {
+    background: $medium-gray;
+  }
 }
 
 .shadowed {
   box-shadow: 1px 2px 4px #888888;
 }
+

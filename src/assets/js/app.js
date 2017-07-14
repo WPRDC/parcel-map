@@ -121,21 +121,45 @@ $.getJSON('assets/data/map-data.json', function (data) {
  * @param {field} field - carto field name (column name)
  */
 function setupRangeControl($slider, dataset, field) {
-    let table = cartoData['datasets'][dataset]['cartoTable'];
-    let account = cartoData['datasets'][dataset]['cartoAccount'];
+    let dataSetData = cartoData['datasets'][dataset];
+    let table = dataSetData['cartoTable'];
+    let account = dataSetData['cartoAccount'];
     let range = [];
-    for (let i in cartoData['datasets'][dataset]['fields']) {
-        let fld = cartoData['datasets'][dataset]['fields'][i];
+    let valFn = '', valBase = 1;
+    for (let i in dataSetData['fields']) {
+        let fld = dataSetData['fields'][i];
         if (fld.id === field) {
             range = fld.range;
+            if(fld.hasOwnProperty('valueFunction')){
+                valFn = fld.valueFunction;
+                valBase = 2;
+                console.log(valFn, valBase)
+            }
+            if(fld.hasOwnProperty('base')){
+                valBase = fld.base;
+            }
 
         }
     }
+    console.log(valFn, valBase);
     if (!range.length) {
         getCartoMinMax(field, table, account)
             .then(function (data) {
+                console.log("___",valFn, valBase);
+
+                console.log({
+                    end: data.max,
+                    start: data.min,
+                    positionValueFunction: "log",
+                    nonLinearBase: valBase,
+                    initialStart: Math.floor((data.min + data.max) / 4),
+                    initialEnd: Math.floor((data.min + data.max) * 3 / 4)
+                });
+
                 $slider = new Foundation.Slider($slider,
                     {
+                        positionValueFunction: "log",
+                        nonLinearBase: +valBase,
                         end: data.max,
                         start: data.min,
                         initialStart: Math.floor((data.min + data.max) / 4),
@@ -146,6 +170,8 @@ function setupRangeControl($slider, dataset, field) {
     else {
         $slider = new Foundation.Slider($slider,
             {
+                positionValueFunction: valFn,
+                nonLinearBase: valBase,
                 end: range[1],
                 start: range[0],
                 initialStart: Math.floor((range[0] + range[1]) / 4),
@@ -224,7 +250,7 @@ $('#style-button').on('click', function () {
 
             options = {
                 legends: true,
-                css: `${dataSet.parcelID}{  polygon-fill: ${color};  polygon-opacity: 0.0;  line-color: #FFF;  line-width: 0;  line-opacity: 1;} ${dataSet.parcelID}[ ${field} <= ${max}] { polygon-opacity: 1;} ${dataSet.parcelID}[ ${field} < ${min}] { polygon-opacity: 0;} ${dataSet.parcelID}[ ${field} > ${max}] { polygon-opacity: 0;}`
+                css: `${dataSet.parcelID}{  polygon-fill: ${color};  polygon-opacity: 0.0;  line-color: #000; line-width: .5; [zoom < 15]{line-width: 0;}   line-opacity: 1;} ${dataSet.parcelID}[ ${field} <= ${max}] { polygon-opacity: 1;} ${dataSet.parcelID}[ ${field} < ${min}] { polygon-opacity: 0;} ${dataSet.parcelID}[ ${field} > ${max}] { polygon-opacity: 0;}`
             };
             console.log(options);
             styleLayer = new Layer(map, 'style_parcel', "", "MultiPolygon", cartoAccount, dataSet.mapId, options);
@@ -244,7 +270,7 @@ $('#style-button').on('click', function () {
             options = {
                 legends: true,
                 css: `${dataSet.parcelID}{
-                polygon-opacity: 1.0;  line-color: #FFF;  line-width: 0;  line-opacity: 1;
+                polygon-opacity: 1.0;  line-color: #000;  line-width: .5; [zoom < 15]{line-width: 0;}   line-opacity: 1;
                 polygon-fill: ramp([${field}], ${colorsToString(colors)}, ${quant}(${bins}))
                 }`
             };
