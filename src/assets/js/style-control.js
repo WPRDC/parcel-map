@@ -19,12 +19,14 @@ $('.style-dataset-select').on('change', function () {
             }
         }
         setupRangeControl($('#rangeSlider'), $('.style-dataset-select').val(), $('.style-field-select').val());
+        initCategoryControl($datasetSelects.val(), $fieldSelects.val());
     })
 });
 
 
 $('.style-field-select').on('change', function () {
-    setupRangeControl($('#rangeSlider'), $('.style-dataset-select').val(), $('.style-field-select').val())
+    setupRangeControl($('#rangeSlider'), $('.style-dataset-select').val(), $('.style-field-select').val());
+    initCategoryControl($('.style-dataset-select').val(), $('.style-field-select').val());
 });
 
 

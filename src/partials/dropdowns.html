@@ -10,17 +10,9 @@
 </div>
 
 
-<div class="dropdown-pane large left shadowed" id="style-dropdown" data-dropdown data-auto-focus>
+<div class="dropdown-pane map-controls large left shadowed" id="style-dropdown" data-dropdown data-auto-focus>
     {{>style}}
 </div>
-<div class="dropdown-pane left shadowed" id="layer-dropdown" data-dropdown data-auto-focus>
-    <h5>Change Basemap:</h5>
-    <form>
-        <select id="basemap-select">
-            <option value="openMapSurfer">OpenMap Surfer (default)</option>
-            <option value="openStreetMap">OpenStreetMap</option>
-            <option value="stamenToner">Stamen Toner</option>
-            <option value="positron">Carto Positron</option>
-        </select>
-    </form>
+<div class="dropdown-pane map-controls left shadowed" id="layer-dropdown" data-dropdown data-auto-focus>
+    {{>basemaps}}
 </div>

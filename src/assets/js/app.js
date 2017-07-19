@@ -1,7 +1,30 @@
 $(document).foundation();
 $(document).ready(function () {
     positionMapButtons();
-})
+
+    $('.basemap-preview').each(function (i) {
+        let basemapName = $(this).parent().data('basemap');
+        let currBasemap = selectBasemaps[basemapName];
+
+        let currMap = new L.Map($(this)[0], {
+            center: [40.45, -79.9959],
+            zoom: 10,
+            maxZoom: 18,
+            attributionControl: false,
+            zoomControl: false,
+            doubleClickZoom: false,
+            dragging: false,
+            scrollWheelZoom: false
+        });
+        console.log(basemapName);
+        currBasemap.addTo(currMap);
+        console.log(i);
+        if (!i) {
+            changeBasemap(basemapName);
+            $(this).siblings('.basemap-overlay').addClass('selected');
+        }
+    });
+});
 
 let currentPin = '0028F00194000000';
 const defaultParcel = {pin: currentPin};
@@ -10,6 +33,7 @@ let cartoData = {};
 
 $(window).resize(function () {
     $('#footer').height("2.5rem");
+    positionMapButtons();
 });
 
 $(window).onload = processParcel(null, null, null, defaultParcel, null, true);
@@ -23,7 +47,7 @@ $(document).on('click', function (event) {
         closeDropdown($('#search-dropdown'));
     }
     // if clicked outside of style-dropdown && clicked oustide of style-menu
-    if (!areElementsUnderEvent(event, [$('#style-dropdown'), $('#style-menu-button'),$('.simplecolorpicker')])) {
+    if (!areElementsUnderEvent(event, [$('#style-dropdown'), $('#style-menu-button'), $('.simplecolorpicker')])) {
         closeDropdown($('#style-dropdown'));
     }
     if (!areElementsUnderEvent(event, [$('#layer-dropdown'), $('#layer-menu-button')])) {
@@ -31,8 +55,8 @@ $(document).on('click', function (event) {
     }
 });
 
-$('.toggle-button').on('click', function(){
-    if($(this).hasClass('toggle-on')){
+$('.toggle-button').on('click', function () {
+    if ($(this).hasClass('toggle-on')) {
         $(this).removeClass('toggle-on');
     } else {
         $(this).addClass('toggle-on');
@@ -109,7 +133,8 @@ $.getJSON('assets/data/map-data.json', function (data) {
             }
         }
     }
-    setupRangeControl($('#rangeSlider'), $('.style-dataset-select').val(), $('.style-field-select').val())
+    setupRangeControl($('#rangeSlider'), $datasetSelects.val(), $fieldSelects.val());
+    initCategoryControl($datasetSelects.val(), $fieldSelects.val());
 
 });
 
@@ -118,68 +143,142 @@ $.getJSON('assets/data/map-data.json', function (data) {
  *
  * @param {jQuery} $slider - selector of slider to be modified
  * @param {string} dataset - id of carto dataset containing field
- * @param {field} field - carto field name (column name)
+ * @param {string} field - carto field name (column name)
  */
 function setupRangeControl($slider, dataset, field) {
     let dataSetData = cartoData['datasets'][dataset];
     let table = dataSetData['cartoTable'];
     let account = dataSetData['cartoAccount'];
     let range = [];
+    let fullRange = false;
+    let type = 'numeric';
     let valFn = '', valBase = 1;
+
+    // Get the field
     for (let i in dataSetData['fields']) {
         let fld = dataSetData['fields'][i];
         if (fld.id === field) {
-            range = fld.range;
-            if(fld.hasOwnProperty('valueFunction')){
+
+            // get type
+            if (fld.hasOwnProperty('type'))
+                type = fld.type;
+
+            // get predefined range
+            if (fld.hasOwnProperty('range'))
+                range = fld.range;
+
+
+            if (range[0] !== null && range[1] !== null)
+                fullRange = true;
+
+
+            // get Value Function and it's associated Base (for log and exp scales)
+            if (fld.hasOwnProperty('valueFunction')) {
                 valFn = fld.valueFunction;
                 valBase = 2;
                 console.log(valFn, valBase)
             }
-            if(fld.hasOwnProperty('base')){
+            if (fld.hasOwnProperty('base')) {
                 valBase = fld.base;
             }
-
         }
     }
-    console.log(valFn, valBase);
-    if (!range.length) {
-        getCartoMinMax(field, table, account)
-            .then(function (data) {
-                console.log("___",valFn, valBase);
 
-                console.log({
-                    end: data.max,
-                    start: data.min,
-                    positionValueFunction: "log",
-                    nonLinearBase: valBase,
-                    initialStart: Math.floor((data.min + data.max) / 4),
-                    initialEnd: Math.floor((data.min + data.max) * 3 / 4)
-                });
+    if (type === 'date') {
+        $('#rangeSlider').foundation('destroy').hide();
+        $('#rangeStart').attr('type', 'text');
+        $('#rangeEnd').attr('type', 'text');
 
-                $slider = new Foundation.Slider($slider,
-                    {
-                        positionValueFunction: "log",
-                        nonLinearBase: +valBase,
-                        end: data.max,
-                        start: data.min,
-                        initialStart: Math.floor((data.min + data.max) / 4),
-                        initialEnd: Math.floor((data.min + data.max) * 3 / 4)
-                    })
-            });
+        $('#rangeStart').fdatepicker({
+            initialDate: range[0],
+            format: 'mm-dd-yyyy',
+            disableDblClickSelection: true,
+            leftArrow: '<i class="material-icons">keyboard_arrow_left</i>',
+            rightArrow: '<i class="material-icons">keyboard_arrow_right</i>',
+        })
+        $('#rangeEnd').fdatepicker({
+            initialDate: range[1],
+            format: 'mm-dd-yyyy',
+            disableDblClickSelection: true,
+            leftArrow: '<i class="material-icons">keyboard_arrow_left</i>',
+            rightArrow: '<i class="material-icons">keyboard_arrow_right</i>',
+        })
     }
-    else {
-        $slider = new Foundation.Slider($slider,
-            {
-                positionValueFunction: valFn,
-                nonLinearBase: valBase,
-                end: range[1],
-                start: range[0],
-                initialStart: Math.floor((range[0] + range[1]) / 4),
-                initialEnd: Math.floor((range[0] + range[1]) * 3 / 4)
-            })
+    else if (type === 'numeric' || type === 'money') {
+        $('#rangeSlider').show();
+        $('#rangeStart').attr('type', 'number');
+        $('#rangeEnd').attr('type', 'number');
+
+        if (fullRange) {
+            // if there is a range provided use it
+            $slider = new Foundation.Slider($slider,
+                {
+                    positionValueFunction: valFn,
+                    nonLinearBase: valBase,
+                    end: range[1],
+                    start: range[0],
+                    initialStart: Math.floor((range[0] + range[1]) / 4),
+                    initialEnd: Math.floor((range[0] + range[1]) * 3 / 4)
+                })
+        } else {
+            // if no range provided, get it from the data
+            getCartoMinMax(field, table, account)
+                .then(function (data) {
+                    if (range[0] === null)
+                        range[0] = data.min;
+                    if (range[1] === null)
+                        range[1] = data.max;
+
+                    if (type === 'date') {
+                        range[0] = Date.parse(range[0]);
+                        range[1] = Date.parse(range[1]);
+                    }
+
+                    console.log('range', range);
+                    $slider = new Foundation.Slider($slider,
+                        {
+                            positionValueFunction: "log",
+                            nonLinearBase: +valBase,
+                            end: range[1],
+                            start: range[0],
+                            initialStart: Math.floor((range[0] + range[1]) / 4),
+                            initialEnd: Math.floor((range[0] + range[1]) * 3 / 4)
+                        })
+                });
+        }
     }
 }
 
+function initCategoryControl(dataset, field) {
+    let dataSetData = cartoData['datasets'][dataset];
+    let table = dataSetData['cartoTable'];
+    let account = dataSetData['cartoAccount'];
+
+    getCartoCategories(field, table, account)
+        .then((data) => {
+            let $categoryChooser = makeCategoryInput(1, field, data);
+            $('#category-form').empty().append($categoryChooser);
+            $categoryChooser.find('.colorpicker').simplecolorpicker({picker: true});
+        });
+}
+
+
+function getCartoCategories(field, table, account) {
+    let sql = `SELECT DISTINCT(${field}) FROM ${table} ORDER BY ${field} ASC`;
+    return new Promise((resolve, reject) => {
+        if (typeof(field) === 'undefined')
+            reject("no field provided");
+        if (typeof(table) === 'undefined')
+            reject('no table provided');
+
+        getCartoQuery(sql, account)
+            .then(function (data) {
+                resolve(data['rows'])
+            }, function (err) {
+                reject(err)
+            })
+    })
+}
 
 /**
  * Get the minimum and maximum values for a field in a carto dataset.
@@ -190,7 +289,7 @@ function setupRangeControl($slider, dataset, field) {
  * @returns {Promise}
  */
 function getCartoMinMax(field, table, account) {
-    let sql = `SELECT min(${field}), max(${field}) FROM ${table}`
+    let sql = `SELECT min(${field}), max(${field}) FROM ${table}`;
 
     return new Promise((resolve, reject) => {
 
@@ -242,6 +341,8 @@ $('#style-button').on('click', function () {
     let field = $('.style-field-select').val();
     let options = {};
     let styleLayer = {};
+    let range = dataSet.range;
+
     switch (styleType) {
         case "range":
             let min = $('#rangeStart').val();
@@ -258,7 +359,25 @@ $('#style-button').on('click', function () {
             addCustomLegend(`${dataSet.title}: ${field}`, [{name: `${min} - ${max}`, value: color}]);
             break;
         case "category":
+            $('.category-field').each((index, elem) => {
+                console.log($(elem).find('.cat-field-select').val());
+                console.log($(elem).find('.cat-colorpicker').val());
 
+                let val = $(elem).find('.cat-field-select').val();
+                let color = $(elem).find('.cat-colorpicker').val();
+                options = {
+                    legends: true,
+                    css: `${dataSet.parcelID}{
+                polygon-opacity: 0.0;  
+                line-color: #000;  line-opacity: 1;
+                line-width: .5; [zoom < 15]{line-width: 0;} 
+                [ ${field} = "${val}" ]{ polygon-opacity: 1.0; polygon-fill: ${color};}
+                }`
+                };
+                console.log(options);
+                styleLayer = new Layer(map, 'style_parcel', "", "MultiPolygon", cartoAccount, dataSet.mapId, options);
+                layers.add(styleLayer);
+            });
             break;
 
         case "choropleth":
@@ -267,6 +386,7 @@ $('#style-button').on('click', function () {
             let clr = $('#choropleth-color').val();
             let colors = choropleths[clr][bins];
             console.log(colors);
+            // setup layer
             options = {
                 legends: true,
                 css: `${dataSet.parcelID}{
@@ -275,14 +395,22 @@ $('#style-button').on('click', function () {
                 }`
             };
             console.log(options);
+
+            // add layer to map
             styleLayer = new Layer(map, 'style_parcel', "", "MultiPolygon", cartoAccount, dataSet.mapId, options);
             layers.add(styleLayer);
 
-            getCartoMinMax(field, dataSet.cartoTable, dataSet.cartoAccount)
-                .then(function (data) {
-                    addChoroplethLegend(`${dataSet.title}: ${field}`, data.min, data.max, colors);
-                });
-
+            // make legend
+            if (typeof(range) === 'undefined' || (range[0] === null && range[1] === null)) {
+                console.log("gettin those mins/maxes");
+                getCartoMinMax(field, dataSet.cartoTable, dataSet.cartoAccount)
+                    .then(function (data) {
+                        addChoroplethLegend(`${dataSet.title}: ${field}`, data.min, data.max, colors);
+                    });
+            }
+            else {
+                addChoroplethLegend(`${dataSet.title}: ${field}`, range[0], range[1], colors);
+            }
             break;
     }
     closeDropdown($('#style-dropdown'));
@@ -330,10 +458,8 @@ function colorsToString(colors) {
 }
 
 $('.dropdown-pane').on('click dblclick', function (e) {
-    console.log('w00000t');
     e.stopPropagation();
 });
-
 
 
 function positionMapButtons() {
@@ -345,6 +471,47 @@ function positionMapButtons() {
     $buttons.show();
 }
 
-$('.dropdown-pane').on("show.zf.dropdownmenu", function (ev, $el){
-    console.log('-------------' + $el.attr('class'));
-})
+
+function makeCategoryInput(index, field, options) {
+    let name = "cat-field" + index;
+    let $newDiv = $('<div>', {class: 'row category-field', id: name});
+    let $newSelect = $('<select>', {class: 'cat-field-select'}).append($('<option>').text('-- Select Field --'));
+    let $colorPicker = $('<select>', {class: "colorpicker cat-colorpicker"}).append(`
+                <option value="#FF5349">Red Orange</option>
+                <option value="#B4674D">Brown</option>
+                <option value="#FF7538">Orange</option>
+                <option value="#FDD9B5">Apricot</option>
+                <option value="#FFB653">Yellow Orange</option>
+                <option value="#FDDB6D">Dandelion</option>
+                <option value="#FCE883">Yellow</option>
+                <option value="#F0E891">Green Yellow</option>
+                <option value="#C5E384">Yellow Green</option>
+                <option value="#1CAC78">Green</option>
+                <option value="#199EBD">Blue Green</option>
+                <option value="#1DACD6">Cerulean</option>
+                <option value="#1F75FE">Blue</option>
+                <option value="#5D76CB">Indigo</option>
+                <option value="#7366BD">Blue Violet</option>
+                <option value="#926EAE">Violet (Purple)</option>
+                <option value="#C0448F">Red Violet</option>
+                <option value="#F75394">Violet Red</option>
+                <option value="#FFAACC">Carnation Pink</option>
+                <option value="#EE204D">Red</option>
+                <option value="#FC2847">Scarlet</option>
+                <option value="#EDEDED">White</option>
+                <option value="#95918C">Gray</option>
+                <option value="#232323">Black</option>`)
+
+    for (let i in options) {
+        $newSelect.append($('<option>', {'value': options[i][field]}).text(options[i][field]))
+    }
+
+    $newDiv
+        .append($("<div>", {class: "small-6 columns"})
+            .append($newSelect)
+        )
+        .append($("<div>", {class: "small-6 columns"})
+            .append($colorPicker)
+        );
+    return $newDiv;
+}

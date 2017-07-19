@@ -2,39 +2,58 @@
     <div class="title">
         <h3 class="text-center">Map Styling</h3>
     </div>
-    <form>
-        <div class="row">
-            <div class="medium-6 columns">
-                <label>
-                    Dataset
-                    <select class="style-dataset-select style-data-select"></select>
-                </label>
+    <div class="row column">
+
+        <form>
+            <div class="row">
+                <div class="medium-6 columns">
+                    <div class="step">
+                        <span class="number">1.</span>
+                        <span class="description">Pick a dataset: </span>
+                    </div>
+                    <label>
+                        <select class="style-dataset-select style-data-select"></select>
+                    </label>
+                </div>
+                <div class="medium-6 columns">
+                    <div class="step">
+                        <span class="number">2.</span>
+                        <span class="description">Pick a field: </span>
+                    </div>
+                    <label>
+                        <select class="style-field-select style-data-select"></select>
+                    </label>
+                </div>
             </div>
-            <div class="medium-6 columns">
-                <label>
-                    Field
-                    <select class="style-field-select style-data-select"></select>
-                </label>
-            </div>
-        </div>
-    </form>
+        </form>
+        <br>
+    </div>
+
 
 
     <div class="row ">
-        <div class="medium-3 columns">
+        <div class="medium-4 columns">
+            <div class="step">
+                <span class="number">3.</span>
+                <span class="description">Pick a Method: </span>
+            </div>
             <ul class="vertical tabs" data-tabs id="style-tabs">
                 <li class="tabs-title" data-style-type="category"><a href="#categoryPanel">Category</a></li>
                 <li class="tabs-title is-active" data-style-type="choropleth"><a href="#choroplethPanel">Choropleth</a></li>
                 <li class="tabs-title" data-style-type="range"><a href="#rangePanel">Range</a></li>
             </ul>
         </div>
-        <div class="medium-9 columns">
+        <div class="medium-8 columns">
+            <div class="step">
+                <span class="number">4.</span>
+                <span class="description">Set the paramters: </span>
+            </div>
             <div class="tabs-content" data-tabs-content="style-tabs">
                 <div class="tabs-panel" id="rangePanel">
                     {{>range}}
                 </div>
                 <div class="tabs-panel" id="categoryPanel">
-                    <!--{{>category}}-->
+                    {{>category}}
                 </div>
                 <div class="tabs-panel" id="choroplethPanel">
                     {{>choropleth}}

@@ -28,6 +28,8 @@ PATHS:
     - "bower_components/foundation-sites/scss"
     - "bower_components/motion-ui/src"
     - "bower_components/jquery-simplecolorpicker/"
+    - "bower_components/foundation-datepicker/scss"
+
   # Paths to JavaScript libraries, which are combined into one file
   javascript:
     # Libraries required by Foundation
@@ -61,6 +63,8 @@ PATHS:
     - "bower_components/foundation-sites/js/foundation.tooltip.js"
     - "bower_components/foundation-sites/js/foundation.zf.responsiveAccordionTabs.js"
     - "bower_components/jquery-simplecolorpicker/jquery.simplecolorpicker.js"
+    - "bower_components/foundation-datepicker/js/foundation-datepicker.min.js"
+
     #- "src/assets/js/vendor/*.js"
     # Paths to your own project code are here
     - "src/assets/js/!(app).js"

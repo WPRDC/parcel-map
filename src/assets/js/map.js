@@ -348,6 +348,20 @@ const basemaps = {
     })
 };
 
+const selectBasemaps = {
+    openStreetMap: L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'),
+    openMapSurfer: L.tileLayer('http://korona.geog.uni-heidelberg.de/tiles/roads/x={x}&y={y}&z={z}'),
+    positron: L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {subdomains: 'abcd'}),
+    stamenToner: L.tileLayer('http://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}.{ext}', {
+        subdomains: 'abcd',
+        ext: 'png'
+    }),
+    stamenWatercolor: L.tileLayer('http://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.{ext}', {
+        subdomains: 'abcd',
+        ext: 'png'
+    })
+};
+
 
 // Carto SQL engine
 const cartoSQL = new cartodb.SQL({user: 'wprdc'});
@@ -377,9 +391,6 @@ const map = new L.Map('map', {
     maxZoom: 18
 });
 
-
-baseMap.addTo(map);
-
 // Instantiate LayerList
 const layers = new LayerList(map);
 
@@ -402,7 +413,6 @@ $('.style-button').on('click', function () {
         let styleLayer = new Layer(map, 'style_parcel', "", "MultiPolygon", cartoMaps[layerName].account, cartoMaps[layerName].id, cartoMaps[layerName].defaultOptions);
         layers.add(styleLayer);
     }
-
 });
 
 $('.style-select').on('change', function () {
@@ -415,11 +425,19 @@ $('.style-select').on('change', function () {
     }
 });
 
-$('#basemap-select').on('change', function () {
-    let newBaseMap = basemaps[$(this).val()];
-    console.log($(this).val());
+$('.basemap-selector').on('click', function () {
+    // change basemap
+    changeBasemap($(this).data('basemap'));
+
+    // darken selected button and clear old one
+    $('.basemap-overlay.selected').removeClass('selected');
+    $(this).children('.basemap-overlay').addClass('selected');
+});
+
+function changeBasemap(basemapName){
+    let newBaseMap = basemaps[basemapName];
     newBaseMap.setZIndex(-1000);
     map.removeLayer(baseMap);
     baseMap = newBaseMap;
     baseMap.addTo(map, true);
-});
+}

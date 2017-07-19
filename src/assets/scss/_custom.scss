@@ -166,14 +166,12 @@ body {
   margin: .2rem
 }
 
-.dropdown-pane {
+.dropdown-pane.map-controls {
   .tabs {
     border-style: solid;
     border-width: 0 0 0 1px;
     border-color: $light-gray;
-    .tabs-title {
 
-    }
   }
 }
 
@@ -373,7 +371,51 @@ select {
   }
 }
 
+
 .shadowed {
   box-shadow: 1px 2px 4px #888888;
 }
 
+.basemap-preview {
+  height: 100px;
+  width: 100px;
+  cursor: pointer;
+
+}
+
+#basemaps {
+  .column-bottom {
+    position: relative;
+  }
+
+}
+
+.basemap-overlay {
+  width: 100px;
+  height: 100px;
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0);
+  padding: 0;
+  z-index: 1000000000;
+  cursor: pointer;
+  &.selected {
+    position: absolute;
+    background-color: rgba(0, 0, 0, .1);
+    border-radius: $global-radius;
+    border: 2px solid $black;
+  }
+  &:hover {
+    position: absolute;
+    background-color: rgba(0, 0, 0, .2);
+    border-radius: $global-radius;
+    border: 2px solid $black;
+  }
+}
+
+.step {
+  margin-bottom: .5rem;
+}
+
+select {
+
+}
