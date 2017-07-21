@@ -359,6 +359,7 @@ $('#style-button').on('click', function () {
             addCustomLegend(`${dataSet.title}: ${field}`, [{name: `${min} - ${max}`, value: color}]);
             break;
         case "category":
+            let legendData = [];
             $('.category-field').each((index, elem) => {
                 console.log($(elem).find('.cat-field-select').val());
                 console.log($(elem).find('.cat-colorpicker').val());
@@ -377,7 +378,9 @@ $('#style-button').on('click', function () {
                 console.log(options);
                 styleLayer = new Layer(map, 'style_parcel', "", "MultiPolygon", cartoAccount, dataSet.mapId, options);
                 layers.add(styleLayer);
+                legendData.push({name: val, value: color})
             });
+            addCustomLegend(`${dataSet.title}: ${field}`, legendData);
             break;
 
         case "choropleth":
@@ -515,3 +518,20 @@ function makeCategoryInput(index, field, options) {
         );
     return $newDiv;
 }
+
+$('#categoryPanel').find('.button.add').on('click', () => {
+    console.log("add button");
+    let n = $('.category-field').length;
+    let dataset = $('.style-dataset-select').val();
+    let field = $('.style-field-select').val();
+    let dataSetData = cartoData['datasets'][dataset];
+    let table = dataSetData['cartoTable'];
+    let account = dataSetData['cartoAccount'];
+
+    getCartoCategories(field, table, account)
+        .then((data) => {
+            let $categoryChooser = makeCategoryInput(n, field, data);
+            $('#category-form').append($categoryChooser);
+            $categoryChooser.find('.colorpicker').simplecolorpicker({picker: true});
+        });
+});

@@ -49,11 +49,16 @@
           "range": [1794, 2017]
         },
         {
-          "id": "usedesc",
-          "name": "Use Description",
+          "id": "classdesc",
+          "name": "Land Use Class",
           "info": "some info and stuff2",
-          "type": "category",
-          "range": [1794, 2017]
+          "type": "category"
+        },
+        {
+          "id": "usedesc",
+          "name": "Land Use Description",
+          "info": "some info and stuff2",
+          "type": "category"
         }
       ]
     },
